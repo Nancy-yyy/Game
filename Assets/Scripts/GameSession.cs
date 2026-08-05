@@ -6,10 +6,10 @@ public static class GameSession
     private const string BirdNameKey = "bird_name";
 
     public static string PlayerName =>
-        PlayerPrefs.GetString(PlayerNameKey, "同學");
+        PlayerPrefs.GetString(PlayerNameKey);
 
     public static string BirdName =>
-        PlayerPrefs.GetString(BirdNameKey, "鳥鳥");
+        PlayerPrefs.GetString(BirdNameKey);
 
     public static void SetPlayerName(string value)
     {
@@ -17,7 +17,7 @@ public static class GameSession
 
         if (string.IsNullOrWhiteSpace(trimmedValue))
         {
-            trimmedValue = "同學";
+            trimmedValue = "玩家";
         }
 
         PlayerPrefs.SetString(PlayerNameKey, trimmedValue);
