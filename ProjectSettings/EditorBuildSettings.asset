@@ -11,5 +11,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/classroomScene.unity
     guid: a9d7c9285e13b474cb7d77125845e034
+  - enabled: 1
+    path: Assets/Scenes/classroom02.unity
+    guid: 7eeff6f766462a943898044a129431e2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
