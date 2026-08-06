@@ -55,7 +55,11 @@
     <Compile Include="Assets\Sprites\InteractEvent.cs" />
     <Compile Include="Assets\Sprites\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\SceneStartPrompt.cs" />
+    <Compile Include="Assets\Scripts\SceneGoalTrigger.cs" />
+    <Compile Include="Assets\Scripts\Case1\Case1FlowController.cs" />
     <Compile Include="Assets\Scripts\DoorTransition.cs" />
+    <Compile Include="Assets\Scripts\GameSession.cs" />
+    <Compile Include="Assets\Scripts\DialogueManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

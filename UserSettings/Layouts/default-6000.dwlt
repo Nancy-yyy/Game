@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 112}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 48
+  controlID: 49
   draggingID: 0
 --- !u!114 &6
 MonoBehaviour:
@@ -145,7 +145,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 112}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 1
-  controlID: 49
+  controlID: 50
   draggingID: 0
 --- !u!114 &7
 MonoBehaviour:
@@ -172,7 +172,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 56}
   m_MaxSize: {x: 24288, y: 8096}
   vertical: 0
-  controlID: 50
+  controlID: 51
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -217,7 +217,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 236.5
     y: 0
-    width: 317.5
+    width: 366.5
     height: 407
   m_MinSize: {x: 202, y: 226}
   m_MaxSize: {x: 4002, y: 4026}
@@ -242,9 +242,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 554
+    x: 603
     y: 0
-    width: 501
+    width: 452
     height: 407
   m_MinSize: {x: 202, y: 226}
   m_MaxSize: {x: 4002, y: 4026}
@@ -598,7 +598,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 237.5
     y: 24
-    width: 315.5
+    width: 364.5
     height: 381
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1175,9 +1175,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 1.3866063, y: -5.949185, z: 2081.9348}
+    m_Target: {x: -7.4463005, y: -3.0274, z: 0}
     speed: 2
-    m_Value: {x: 1.3866063, y: -5.949185, z: 2081.9348}
+    m_Value: {x: -7.4463005, y: -3.0274, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1228,9 +1228,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 10.168028
+    m_Target: 6.638628
     speed: 2
-    m_Value: 10.168028
+    m_Value: 6.638628
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1313,22 +1313,16 @@ MonoBehaviour:
       m_LastClickedID:
         m_rawData: 0
       m_ExpandedIDs:
-      - m_rawData: 568105589213669742
-      - m_rawData: 568105589213673236
-      - m_rawData: 568105589213686248
-      - m_rawData: 568105589213686436
-      - m_rawData: 568105589213687004
-      - m_rawData: 568105589213687158
-      - m_rawData: 568105589213691944
-      - m_rawData: 568105589213692216
-      - m_rawData: 568105589213692940
+      - m_rawData: 568105589213742286
+      - m_rawData: 568105589213743462
+      - m_rawData: 568105589213744158
+      - m_rawData: 568105589213746960
+      - m_rawData: 568105589213749004
+      - m_rawData: 568105589213750126
+      - m_rawData: 568105589213750718
+      - m_rawData: 568105589213755168
+      - m_rawData: 568105589213755334
       - m_rawData: 568105589213756046
-      - m_rawData: 568105584918842014
-      - m_rawData: 568105584918842048
-      - m_rawData: 568105584918854980
-      - m_rawData: 568105584918855024
-      - m_rawData: 568105584918855836
-      - m_rawData: 568105584918855880
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1488,9 +1482,9 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 555
+    x: 604
     y: 24
-    width: 499
+    width: 450
     height: 381
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1537,7 +1531,7 @@ MonoBehaviour:
     m_VAllowExceedBaseRangeMin: 1
     m_VAllowExceedBaseRangeMax: 1
     m_ScaleWithWindow: 0
-    m_HSlider: 0
+    m_HSlider: 1
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
     m_EnableMouseInput: 1
@@ -1549,23 +1543,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 499.5
-      height: 364.5
-    m_Scale: {x: 0.26015624, y: 0.26015624}
-    m_Translation: {x: 249.75, y: 182.25}
+      width: 450
+      height: 360
+    m_Scale: {x: 0.48237795, y: 0.48237795}
+    m_Translation: {x: 221.41939, y: 180}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -960
-      y: -700.5405
-      width: 1920
-      height: 1401.081
+      x: -459.0164
+      y: -373.1514
+      width: 932.8785
+      height: 746.3028
     m_MinimalGUI: 1
-  m_defaultScale: 0.26015624
-  m_LastWindowPixelSize: {x: 499.5, y: 385.5}
+  m_defaultScale: 0.234375
+  m_LastWindowPixelSize: {x: 450, y: 381}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000100000100
@@ -1663,7 +1657,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Font
+    - Assets/Scenes
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1673,7 +1667,7 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 74
   m_LastFolders:
-  - Assets/Font
+  - Assets/Scenes
   m_LastFoldersGridSize: 74
   m_LastProjectPath: C:\Users\Nancy\Desktop\Ver2.0
   m_LockTracker:
@@ -1682,12 +1676,12 @@ MonoBehaviour:
   m_FolderTreeState:
     scrollPos: {x: 0, y: 79}
     m_SelectedIDs:
-    - m_rawData: 568105584918845998
+    - m_rawData: 568105584918844244
     m_LastClickedID:
-      m_rawData: 568105584918845998
+      m_rawData: 568105584918844244
     m_ExpandedIDs:
     - m_rawData: 0
-    - m_rawData: 568105584918844148
+    - m_rawData: 568105584918844160
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1721,7 +1715,7 @@ MonoBehaviour:
       m_rawData: 0
     m_ExpandedIDs:
     - m_rawData: 0
-    - m_rawData: 568105584918844148
+    - m_rawData: 568105584918844160
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1749,9 +1743,10 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: []
+    m_SelectedInstanceIDs:
+    - m_rawData: 568105584918844338
     m_LastClickedEntityId:
-      m_rawData: 0
+      m_rawData: 568105584918844338
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs:
     - m_rawData: 568105584918846230
@@ -1874,7 +1869,7 @@ MonoBehaviour:
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectEntityId:
     m_rawData: 0
-  m_LastVerticalScrollValue: 216
+  m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
