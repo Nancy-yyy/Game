@@ -1452,7 +1452,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: -915076659162096960, guid: eda06cbc30d197a45acb6de9bd8504f2, type: 3}
-  m_Type: 0
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1717,6 +1717,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1707031517}
   m_CullTransparentMesh: 1
+--- !u!1 &1728524483 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5638135431619999410, guid: 211799a4e83099a42a667f9c7776de2b, type: 3}
+  m_PrefabInstance: {fileID: 5543205974181963753}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1728524489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728524483}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825f7990ab528954d9e6d94d3d164e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  moveSpeed: 5
 --- !u!1001 &5543205974181963753
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1772,7 +1790,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5638135431619999410, guid: 211799a4e83099a42a667f9c7776de2b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1728524489}
   m_SourcePrefab: {fileID: 100100000, guid: 211799a4e83099a42a667f9c7776de2b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

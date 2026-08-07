@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -13,30 +14,22 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    void OnEnable()
-    {
-        movement = Vector2.zero;
-        if (anim != null)
-        {
-            anim.SetFloat("Speed", 0f);
-        }
-    }
-
     void Update()
     {
         movement = Vector2.zero;
-
-        // 改用最直接、不會失效的舊版 Input.GetKey 偵測
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) movement.y = 1;
-        if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) movement.y = -1;
-        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) movement.x = -1;
-        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) movement.x = 1;
+        if (Keyboard.current != null)
+        {
+            if (Keyboard.current.wKey.isPressed) movement.y = 1;
+            if (Keyboard.current.sKey.isPressed) movement.y = -1;
+            if (Keyboard.current.aKey.isPressed) movement.x = -1;
+            if (Keyboard.current.dKey.isPressed) movement.x = 1;
+        }
 
         if (anim != null)
         {
             anim.SetFloat("Horizontal", movement.x);
             anim.SetFloat("Vertical", movement.y);
-            anim.SetFloat("Speed", movement.sqrMagnitude);
+            anim.SetFloat("Speed", movement.sqrMagnitude); 
         }
     }
 

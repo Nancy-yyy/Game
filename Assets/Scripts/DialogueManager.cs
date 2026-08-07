@@ -15,7 +15,7 @@ public class DialogueManager : MonoBehaviour
 
     [Header("遊戲角色與移動控制")]
     public GameObject playerObject;        
-    public MonoBehaviour playerMovementScript; // 讓你在 Inspector 手動拖入移動腳本
+    public MonoBehaviour playerMovementScript; // 手動把你的移動腳本拖進來！
 
     [Header("預設對話設定")]
     [TextArea(2, 5)]
@@ -30,25 +30,32 @@ public class DialogueManager : MonoBehaviour
 
     void Start()
     {
-        // 1. 遊戲一開始：隱藏 Player 與 hintPanel
         if (playerObject != null)
         {
-            playerObject.SetActive(false);
+            // 讓 Player 保持 Active，但一開始關閉圖片與碰撞
+            playerObject.SetActive(true); 
+            
+            SpriteRenderer sr = playerObject.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
+
+            Collider2D col = playerObject.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            // 一開始強制關閉移動腳本
+            if (playerMovementScript != null) 
+            {
+                playerMovementScript.enabled = false;
+            }
         }
 
-        if (hintPanel != null) 
-        {
-            hintPanel.SetActive(false);
-        }
+        // 隱藏 hintPanel
+        if (hintPanel != null) hintPanel.SetActive(false);
 
-        // 2. 初始化對話框透明度為 0
+        // 初始化對話框透明度為 0
         if (dialoguePanel != null) dialoguePanel.SetActive(true);
-        if (dialogueCanvasGroup != null)
-        {
-            dialogueCanvasGroup.alpha = 0f;
-        }
+        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
 
-        // 3. 啟動漸顯協程
+        // 啟動漸顯協程
         ShowDialogue(initialDialogue, speakerName);
         StartCoroutine(FadeInDialogue());
     }
@@ -100,36 +107,38 @@ public class DialogueManager : MonoBehaviour
 
     void CloseDialogueAndStartGame()
     {
-        // 關閉對話框
+        // 1. 關閉對話框
         if (dialoguePanel != null)
         {
             dialoguePanel.SetActive(false);
         }
         isDialogueActive = false;
 
-        // 讓 Player 與 hintPanel 同時出現
+        // 2. 讓 Player 的圖片與碰撞恢復顯示
         if (playerObject != null) 
         {
-            playerObject.SetActive(true);
+            SpriteRenderer sr = playerObject.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = true;
 
-            // 確保剛體被喚醒，避免物理卡住
-            Rigidbody2D rb = playerObject.GetComponent<Rigidbody2D>();
-            if (rb != null)
-            {
-                rb.WakeUp();
-            }
+            Collider2D col = playerObject.GetComponent<Collider2D>();
+            if (col != null) col.enabled = true;
         }
 
+        // 3. 讓 hintPanel 出現
         if (hintPanel != null) 
         {
             hintPanel.SetActive(true);
         }
 
-        // 解鎖玩家移動
+        // 4. 解鎖玩家移動腳本
         if (playerMovementScript != null)
         {
             playerMovementScript.enabled = true; 
-            Debug.Log("玩家移動腳本已解鎖！");
+            Debug.Log("【成功】玩家移動腳本已手動解鎖！");
+        }
+        else
+        {
+            Debug.LogError("【錯誤】你忘記在 Inspector 把移動腳本拖進 Player Movement Script 格子裡了！");
         }
     }
 }
