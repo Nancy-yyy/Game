@@ -813,7 +813,7 @@ Transform:
   m_GameObject: {fileID: 414299655}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.7912164, y: 0.45746252, z: -10}
+  m_LocalPosition: {x: -6.7912164, y: 0.4574623, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2088,7 +2088,7 @@ MonoBehaviour:
   speakerHeadImage: {fileID: 1034610247}
   playerObject: {fileID: 1710881351}
   playerMovementScript: {fileID: 1706386700}
-  initialDialogue: "\u54C7\uFF01\u539F\u4F86\u9019\u5C31\u662F\u65B0\u6559\u5BA4...\u770B\u8D77\u4F86\u597D\u5927\u963F..."
+  initialDialogue: "\u54C7\uFF01\u539F\u4F86\u9019\u5C31\u662F\u65B0\u6559\u5BA4...\u770B\u8D77\u4F86\u597D\u5927\u963F...\n\u5750\u54EA\u88E1\u597D\u5462...\u4E2D\u9593\u7B2C\u4E8C\u6392\u597D\u4E86\uFF01\n(\u9EDE\u64CA\u5C0D\u8A71\u6846\u958B\u59CB\u79FB\u52D5)"
   speakerName: "\u4E3B\u89D2"
   speakerSprite: {fileID: 0}
   fadeInDuration: 0.5
