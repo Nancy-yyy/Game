@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using TMPro; // 1. 記得引入 TextMeshPro 命名空間
 
 public class BellSceneIntro : MonoBehaviour
 {
@@ -9,6 +10,18 @@ public class BellSceneIntro : MonoBehaviour
     
     [Tooltip("對話框 Panel")]
     public GameObject dialoguePanel;
+
+    [Tooltip("對話文字組件")]
+    public TextMeshProUGUI dialogueText; // 2. 新增文字 UI 欄位
+
+    [Header("對話內容設定")]
+    [TextArea(2, 5)]
+    public string[] dialogueLines = new string[] // 3. 設定要顯示的對話
+    {
+        "大家好，我是《管理資訊系統》這門課的教授",
+        "在上課之前，大家需要先了解...#%^$^&%^*$^",
+        "...基本上就是這樣，另外，這門課有指定的原文書，大家別忘了在下次上課前準備好"
+    };
 
     [Header("音效設定")]
     [Tooltip("鐘聲音效檔 (.mp3 / .wav)")]
@@ -26,6 +39,10 @@ public class BellSceneIntro : MonoBehaviour
 
     private AudioSource audioSource;
     private CanvasGroup dialogueCanvasGroup;
+    
+    // 判斷狀態用的變數
+    private int currentLineIndex = 0;
+    private bool canClickToNext = false; 
 
     private void Awake()
     {
@@ -63,14 +80,20 @@ public class BellSceneIntro : MonoBehaviour
         StartCoroutine(PlayStrictSequence());
     }
 
+    private void Update()
+    {
+        // 4. 只有當動畫結束、允許點擊，且玩家按下左鍵時才換下一句
+        if (canClickToNext && Input.GetMouseButtonDown(0))
+        {
+            NextLine();
+        }
+    }
+
     private IEnumerator PlayStrictSequence()
     {
-        // 取得音效實際長度 (如果沒放音效則預設搖擺 2 秒)
         float soundDuration = (bellSoundClip != null) ? bellSoundClip.length : 2.0f;
 
-        // ----------------------------------------------------
-        // 步驟二 & 三：鈴鐺出現，同步播放鐘聲與左右搖擺
-        // ----------------------------------------------------
+        // 步驟二 & 三：鈴鐺搖擺與鐘聲
         if (bellSoundClip != null && audioSource != null)
         {
             audioSource.clip = bellSoundClip;
@@ -80,7 +103,6 @@ public class BellSceneIntro : MonoBehaviour
         float elapsedTime = 0f;
         Quaternion initialRotation = (bellImage != null) ? bellImage.localRotation : Quaternion.identity;
 
-        // 搖擺時間完全對齊鐘聲長度 (soundDuration)
         while (elapsedTime < soundDuration)
         {
             if (bellImage != null)
@@ -93,21 +115,20 @@ public class BellSceneIntro : MonoBehaviour
             yield return null;
         }
 
-        // ----------------------------------------------------
-        // 步驟四：鐘聲結束，鈴鐺消失
-        // ----------------------------------------------------
+        // 步驟四：鈴鐺歸位並消失
         if (bellImage != null)
         {
-            bellImage.localRotation = initialRotation; // 歸位
-            bellImage.gameObject.SetActive(false);     // 鈴鐺消失
+            bellImage.localRotation = initialRotation;
+            bellImage.gameObject.SetActive(false);
         }
 
-        // ----------------------------------------------------
-        // 步驟五：對話框漸顯出現 (Fade In)
-        // ----------------------------------------------------
+        // 步驟五：對話框漸顯，並預先放入第一句話
         if (dialoguePanel != null && dialogueCanvasGroup != null)
         {
-            dialoguePanel.SetActive(true); // 顯示對話框物件
+            // 在淡入之前先設定好第一句話
+            ShowCurrentLine();
+            
+            dialoguePanel.SetActive(true);
 
             float fadeTime = 0f;
             while (fadeTime < fadeInDuration)
@@ -117,7 +138,35 @@ public class BellSceneIntro : MonoBehaviour
                 yield return null;
             }
 
-            dialogueCanvasGroup.alpha = 1f; // 確保完全顯現
+            dialogueCanvasGroup.alpha = 1f;
+        }
+
+        // 動畫完全播完，開啟點擊換頁開關
+        canClickToNext = true;
+    }
+
+    // 顯示目前句子的方法
+    private void ShowCurrentLine()
+    {
+        if (dialogueText != null && dialogueLines.Length > 0 && currentLineIndex < dialogueLines.Length)
+        {
+            dialogueText.text = dialogueLines[currentLineIndex];
+        }
+    }
+
+    // 切換下一句的方法
+    public void NextLine()
+    {
+        currentLineIndex++;
+        if (currentLineIndex < dialogueLines.Length)
+        {
+            ShowCurrentLine();
+        }
+        else
+        {
+            // 對話完全播放完畢後的處理（如：關閉對話框或切換場景）
+            canClickToNext = false;
+            Debug.Log("本幕對話結束！");
         }
     }
 }
