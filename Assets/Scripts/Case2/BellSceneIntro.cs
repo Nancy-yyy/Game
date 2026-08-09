@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using TMPro; // 1. 記得引入 TextMeshPro 命名空間
+using TMPro;
+using UnityEngine.Video; // 1. 記得引入影片命名空間
 
 public class BellSceneIntro : MonoBehaviour
 {
@@ -12,11 +13,21 @@ public class BellSceneIntro : MonoBehaviour
     public GameObject dialoguePanel;
 
     [Tooltip("對話文字組件")]
-    public TextMeshProUGUI dialogueText; // 2. 新增文字 UI 欄位
+    public TextMeshProUGUI dialogueText;
+
+    [Header("影片設定")]
+    [Tooltip("負責播放影片的 VideoPlayer 組件")]
+    public VideoPlayer videoPlayer;
+
+    [Tooltip("影片播放用的 UI (例如包含 RawImage 的 GameObject)")]
+    public GameObject videoUI;
+
+    [Tooltip("按順序播放的影片清單 (放入 2 個 .mp4 Clip)")]
+    public VideoClip[] videoClips;
 
     [Header("對話內容設定")]
     [TextArea(2, 5)]
-    public string[] dialogueLines = new string[] // 3. 設定要顯示的對話
+    public string[] dialogueLines = new string[]
     {
         "大家好，我是《管理資訊系統》這門課的教授",
         "在上課之前，大家需要先了解...#%^$^&%^*$^",
@@ -28,35 +39,27 @@ public class BellSceneIntro : MonoBehaviour
     public AudioClip bellSoundClip;
 
     [Header("搖擺與淡入參數")]
-    [Tooltip("擺動角度")]
     public float swingAngle = 20f;
-    
-    [Tooltip("擺動頻率/速度")]
     public float swingSpeed = 8f;
-    
-    [Tooltip("對話框漸顯時間 (秒)")]
     public float fadeInDuration = 1.0f;
 
     private AudioSource audioSource;
     private CanvasGroup dialogueCanvasGroup;
     
-    // 判斷狀態用的變數
     private int currentLineIndex = 0;
     private bool canClickToNext = false; 
 
     private void Awake()
     {
-        // 1. 設定 AudioSource 2D 全域聲音
         audioSource = gameObject.GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
-        audioSource.spatialBlend = 0f; // 純 2D 聲音
+        audioSource.spatialBlend = 0f;
         audioSource.volume = 1.0f;
         audioSource.playOnAwake = false;
 
-        // 2. 初始化對話框 (隱藏 + 透明度 0)
         if (dialoguePanel != null)
         {
             dialogueCanvasGroup = dialoguePanel.GetComponent<CanvasGroup>();
@@ -68,10 +71,15 @@ public class BellSceneIntro : MonoBehaviour
             dialoguePanel.SetActive(false);
         }
 
-        // 3. 步驟一：進入場景，確定鈴鐺先出現
         if (bellImage != null)
         {
             bellImage.gameObject.SetActive(true);
+        }
+
+        // 初始化：先隱藏影片 UI
+        if (videoUI != null)
+        {
+            videoUI.SetActive(false);
         }
     }
 
@@ -82,7 +90,6 @@ public class BellSceneIntro : MonoBehaviour
 
     private void Update()
     {
-        // 4. 只有當動畫結束、允許點擊，且玩家按下左鍵時才換下一句
         if (canClickToNext && Input.GetMouseButtonDown(0))
         {
             NextLine();
@@ -93,7 +100,6 @@ public class BellSceneIntro : MonoBehaviour
     {
         float soundDuration = (bellSoundClip != null) ? bellSoundClip.length : 2.0f;
 
-        // 步驟二 & 三：鈴鐺搖擺與鐘聲
         if (bellSoundClip != null && audioSource != null)
         {
             audioSource.clip = bellSoundClip;
@@ -115,19 +121,15 @@ public class BellSceneIntro : MonoBehaviour
             yield return null;
         }
 
-        // 步驟四：鈴鐺歸位並消失
         if (bellImage != null)
         {
             bellImage.localRotation = initialRotation;
             bellImage.gameObject.SetActive(false);
         }
 
-        // 步驟五：對話框漸顯，並預先放入第一句話
         if (dialoguePanel != null && dialogueCanvasGroup != null)
         {
-            // 在淡入之前先設定好第一句話
             ShowCurrentLine();
-            
             dialoguePanel.SetActive(true);
 
             float fadeTime = 0f;
@@ -141,11 +143,9 @@ public class BellSceneIntro : MonoBehaviour
             dialogueCanvasGroup.alpha = 1f;
         }
 
-        // 動畫完全播完，開啟點擊換頁開關
         canClickToNext = true;
     }
 
-    // 顯示目前句子的方法
     private void ShowCurrentLine()
     {
         if (dialogueText != null && dialogueLines.Length > 0 && currentLineIndex < dialogueLines.Length)
@@ -154,7 +154,6 @@ public class BellSceneIntro : MonoBehaviour
         }
     }
 
-    // 切換下一句的方法
     public void NextLine()
     {
         currentLineIndex++;
@@ -164,9 +163,56 @@ public class BellSceneIntro : MonoBehaviour
         }
         else
         {
-            // 對話完全播放完畢後的處理（如：關閉對話框或切換場景）
+            // 對話結束：關閉對話框，開啟影片序列
             canClickToNext = false;
-            Debug.Log("本幕對話結束！");
+            if (dialoguePanel != null) dialoguePanel.SetActive(false);
+
+            StartCoroutine(PlayVideoSequence());
         }
+    }
+
+    // 連續播放影片的協程
+    private IEnumerator PlayVideoSequence()
+    {
+        if (videoPlayer == null || videoClips == null || videoClips.Length == 0)
+        {
+            Debug.LogWarning("VideoPlayer 或 VideoClips 未設定！");
+            yield break;
+        }
+
+        if (videoUI != null) videoUI.SetActive(true);
+
+        // 依序播放陣列中的影片
+        foreach (VideoClip clip in videoClips)
+        {
+            if (clip == null) continue;
+
+            videoPlayer.clip = clip;
+            videoPlayer.Prepare();
+
+            // 等待影片預載完成
+            while (!videoPlayer.isPrepared)
+            {
+                yield return null;
+            }
+
+            videoPlayer.Play();
+
+            // 等待開始播放
+            while (!videoPlayer.isPlaying)
+            {
+                yield return null;
+            }
+
+            // 等待影片播放結束
+            while (videoPlayer.isPlaying)
+            {
+                yield return null;
+            }
+        }
+
+        // 兩部影片均播放完畢後的後續處理
+        if (videoUI != null) videoUI.SetActive(false);
+        Debug.Log("所有影片播放完畢！可進行切換場景或下一個遊戲階段");
     }
 }
