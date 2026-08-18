@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;           //讓 Unity 可以切換 Scene
 
 public class StartSceneManager : MonoBehaviour
 {
@@ -21,8 +22,13 @@ public class StartSceneManager : MonoBehaviour
         }
 
         Debug.Log(
-            "玩家姓名：" + playerName         //確認有正常抓到姓名，且不切換 Scene
+            "玩家姓名：" + playerName         //確認有正常抓到姓名，且不切換 Scene，測完沒問題就刪
         );
+
+        GameData.PlayerName = playerName;    //把玩家輸入的名字存起來
+
+        //切到序章場景
+        SceneManager.LoadScene("PrologueOutdoor");    
     }
 
     public void CloseWarning()
