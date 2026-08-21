@@ -57,10 +57,19 @@
     <Compile Include="Assets\Scripts\Case2\SceneGoalTrigger.cs" />
     <Compile Include="Assets\Sprites\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\Case2\DialogueManager.cs" />
+    <Compile Include="Assets\Scripts\Start\PrologueOutdoorManager.cs" />
+    <Compile Include="Assets\Scripts\Core\GameData.cs" />
     <Compile Include="Assets\Scripts\Case2\SceneStartPrompt.cs" />
     <Compile Include="Assets\Scripts\Case1\Case1FlowController.cs" />
+    <Compile Include="Assets\Scripts\Case2\SceneTransition.cs" />
+    <Compile Include="Assets\Scripts\Core\BlinkUI.cs" />
     <Compile Include="Assets\Scripts\Case2\DoorTransition.cs" />
+    <Compile Include="Assets\Scripts\Case2\天平\DraggableCard.cs" />
+    <Compile Include="Assets\Scripts\Start\StartSceneManager.cs" />
+    <Compile Include="Assets\Scripts\Case2\MultiCardCarousel.cs" />
     <Compile Include="Assets\Scripts\Case2\GameSession.cs" />
+    <Compile Include="Assets\Scripts\Start\PrologueHomeManager.cs" />
+    <Compile Include="Assets\Scripts\Case2\天平\ScaleController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
