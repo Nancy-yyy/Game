@@ -1,0 +1,379 @@
+fileFormatVersion: 2
+guid: 20501fba049b8f6498e73a40a10421da
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -659569578265647468
+    second: word1_0
+  - first:
+      213: 2781434217263627903
+    second: word1_1
+  - first:
+      213: -2552154752147533654
+    second: word1_2
+  - first:
+      213: -210626067185408592
+    second: word1_3
+  - first:
+      213: -361055134605540943
+    second: word1_4
+  - first:
+      213: 474114165682803704
+    second: word1_5
+  - first:
+      213: 1997312460313773362
+    second: word1_6
+  - first:
+      213: -1475767506682869288
+    second: word1_7
+  - first:
+      213: -8032361466710004395
+    second: word1_8
+  - first:
+      213: -1253863061167724304
+    second: word1_9
+  - first:
+      213: 3030628177941682827
+    second: word1_10
+  - first:
+      213: -3359037412493282518
+    second: word1_11
+  - first:
+      213: -152454004241610210
+    second: word1_12
+  - first:
+      213: 5002735611434539350
+    second: word1_13
+  - first:
+      213: 3339890506729515306
+    second: word1_14
+  - first:
+      213: 6379314447352646747
+    second: word1_15
+  - first:
+      213: 2779288270617483838
+    second: word1_16
+  - first:
+      213: 5960281342555514259
+    second: word1_17
+  - first:
+      213: 6129067460976906561
+    second: word1_18
+  - first:
+      213: 8336641911320855556
+    second: word1_19
+  - first:
+      213: 8543132128641310809
+    second: word1_20
+  - first:
+      213: -699262289812519476
+    second: word1_21
+  - first:
+      213: 7021999563507738532
+    second: word1_22
+  - first:
+      213: 8538134509667817998
+    second: word1_23
+  - first:
+      213: -5136623834601729444
+    second: word1_24
+  - first:
+      213: 7767212582789567245
+    second: word1_25
+  - first:
+      213: -2551547727687592220
+    second: word1_26
+  - first:
+      213: -5693710403402616503
+    second: word1_27
+  - first:
+      213: 4688915504736448756
+    second: word1_28
+  - first:
+      213: 2044262738732885403
+    second: word1_29
+  - first:
+      213: -153176265104860709
+    second: word1_30
+  - first:
+      213: -8138433151624324358
+    second: word1_31
+  - first:
+      213: 1406598843442325312
+    second: word1_32
+  - first:
+      213: -8844548900210287717
+    second: word1_33
+  - first:
+      213: -3709006397064489190
+    second: word1_34
+  - first:
+      213: 5628243935514256059
+    second: word1_35
+  - first:
+      213: 3737414335360113163
+    second: word1_36
+  - first:
+      213: -1393074052495080140
+    second: word1_37
+  - first:
+      213: -8613606059091366753
+    second: word1_38
+  - first:
+      213: -5758653187548400586
+    second: word1_39
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: word1_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 848
+        height: 469
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49662de86fcb8d6f0800000000000000
+      internalID: -659569578265647468
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: word1_13
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 366
+        width: 26
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65990c078894d6540800000000000000
+      internalID: 5002735611434539350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: word1_21
+      rect:
+        serializedVersion: 2
+        x: 190
+        y: 252
+        width: 73
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc506eaf6a8bb46f0800000000000000
+      internalID: -699262289812519476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: word1_22
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 263
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4a7a3db1667237160800000000000000
+      internalID: 7021999563507738532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5f0d5d8d8e197e4449a8ec9bafd31ad3
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      word1_0: -659569578265647468
+      word1_1: 2781434217263627903
+      word1_10: 3030628177941682827
+      word1_11: -3359037412493282518
+      word1_12: -152454004241610210
+      word1_13: 5002735611434539350
+      word1_14: 3339890506729515306
+      word1_15: 6379314447352646747
+      word1_16: 2779288270617483838
+      word1_17: 5960281342555514259
+      word1_18: 6129067460976906561
+      word1_19: 8336641911320855556
+      word1_2: -2552154752147533654
+      word1_20: 8543132128641310809
+      word1_21: -699262289812519476
+      word1_22: 7021999563507738532
+      word1_23: 8538134509667817998
+      word1_24: -5136623834601729444
+      word1_25: 7767212582789567245
+      word1_26: -2551547727687592220
+      word1_27: -5693710403402616503
+      word1_28: 4688915504736448756
+      word1_29: 2044262738732885403
+      word1_3: -210626067185408592
+      word1_30: -153176265104860709
+      word1_31: -8138433151624324358
+      word1_32: 1406598843442325312
+      word1_33: -8844548900210287717
+      word1_34: -3709006397064489190
+      word1_35: 5628243935514256059
+      word1_36: 3737414335360113163
+      word1_37: -1393074052495080140
+      word1_38: -8613606059091366753
+      word1_39: -5758653187548400586
+      word1_4: -361055134605540943
+      word1_40: -462238683
+      word1_5: 474114165682803704
+      word1_6: 1997312460313773362
+      word1_7: -1475767506682869288
+      word1_8: -8032361466710004395
+      word1_9: -1253863061167724304
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

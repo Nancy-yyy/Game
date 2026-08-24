@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Video; // 1. 記得引入影片命名空間
+using UnityEngine.Video; 
+using UnityEngine.SceneManagement; // 引入場景管理命名空間
 
 public class BellSceneIntro : MonoBehaviour
 {
@@ -24,6 +25,12 @@ public class BellSceneIntro : MonoBehaviour
 
     [Tooltip("按順序播放的影片清單 (放入 2 個 .mp4 Clip)")]
     public VideoClip[] videoClips;
+
+    [Header("轉場與目標場景設定")]
+    [Tooltip("拖入場景中的 TransitionCanvas (若留空會自動搜尋)")]
+    public SceneTransition sceneTransition;
+    [Tooltip("影片播完後要載入的目標場景名稱")]
+    public string nextSceneName = "Case2_GameScene01";
 
     [Header("對話內容設定")]
     [TextArea(2, 5)]
@@ -80,6 +87,12 @@ public class BellSceneIntro : MonoBehaviour
         if (videoUI != null)
         {
             videoUI.SetActive(false);
+        }
+
+        // 自動抓取場景中的 SceneTransition
+        if (sceneTransition == null)
+        {
+            sceneTransition = FindObjectOfType<SceneTransition>();
         }
     }
 
@@ -176,7 +189,8 @@ public class BellSceneIntro : MonoBehaviour
     {
         if (videoPlayer == null || videoClips == null || videoClips.Length == 0)
         {
-            Debug.LogWarning("VideoPlayer 或 VideoClips 未設定！");
+            Debug.LogWarning("VideoPlayer 或 VideoClips 未設定，直接切換場景！");
+            LoadNextGameScene();
             yield break;
         }
 
@@ -213,6 +227,22 @@ public class BellSceneIntro : MonoBehaviour
 
         // 兩部影片均播放完畢後的後續處理
         if (videoUI != null) videoUI.SetActive(false);
-        Debug.Log("所有影片播放完畢！可進行切換場景或下一個遊戲階段");
+        Debug.Log("所有影片播放完畢！開始轉場至 " + nextSceneName);
+
+        // 影片播完後啟動轉場進入 Case2_GameScene01
+        LoadNextGameScene();
+    }
+
+    private void LoadNextGameScene()
+    {
+        if (sceneTransition != null)
+        {
+            sceneTransition.StartTransitionAndLoadScene(nextSceneName);
+        }
+        else
+        {
+            // 防呆機制：若場景中沒有 SceneTransition，則直接切換
+            SceneManager.LoadScene(nextSceneName);
+        }
     }
 }
