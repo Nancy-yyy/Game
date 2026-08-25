@@ -1,11 +1,13 @@
+/*
 using System.Collections;
 using UnityEngine;
 using TMPro;
-using UnityEngine.Video; 
-using UnityEngine.SceneManagement; // 引入場景管理命名空間
+using UnityEngine.Video; // 1. 記得引入影片命名空間
 
 public class BellSceneIntro : MonoBehaviour
 {
+    [SerializeField] private TMP_Text playerNameText;
+    
     [Header("UI 元件")]
     [Tooltip("鈴鐺 UI (進入場景會先開啟，播完自動隱藏)")]
     public RectTransform bellImage;
@@ -25,12 +27,6 @@ public class BellSceneIntro : MonoBehaviour
 
     [Tooltip("按順序播放的影片清單 (放入 2 個 .mp4 Clip)")]
     public VideoClip[] videoClips;
-
-    [Header("轉場與目標場景設定")]
-    [Tooltip("拖入場景中的 TransitionCanvas (若留空會自動搜尋)")]
-    public SceneTransition sceneTransition;
-    [Tooltip("影片播完後要載入的目標場景名稱")]
-    public string nextSceneName = "Case2_GameScene01";
 
     [Header("對話內容設定")]
     [TextArea(2, 5)]
@@ -82,22 +78,12 @@ public class BellSceneIntro : MonoBehaviour
         {
             bellImage.gameObject.SetActive(true);
         }
-
-        // 初始化：先隱藏影片 UI
-        if (videoUI != null)
-        {
-            videoUI.SetActive(false);
-        }
-
-        // 自動抓取場景中的 SceneTransition
-        if (sceneTransition == null)
-        {
-            sceneTransition = FindObjectOfType<SceneTransition>();
-        }
     }
 
     private void Start()
     {
+        playerNameText.text = GameData.PlayerName;
+
         StartCoroutine(PlayStrictSequence());
     }
 
@@ -183,66 +169,273 @@ public class BellSceneIntro : MonoBehaviour
             StartCoroutine(PlayVideoSequence());
         }
     }
+}
+*/
 
-    // 連續播放影片的協程
-    private IEnumerator PlayVideoSequence()
+using System.Collections;
+using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+public class BellSceneIntro : MonoBehaviour
+{
+    [Header("玩家名稱")]
+    [SerializeField] private TMP_Text playerNameText;
+
+    [Header("鈴鐺")]
+    public RectTransform bellImage;
+
+    [Header("教授對話")]
+    public GameObject dialoguePanel;
+    public TextMeshProUGUI dialogueText;
+
+    [TextArea(2, 5)]
+    public string[] dialogueLines = new string[]
     {
-        if (videoPlayer == null || videoClips == null || videoClips.Length == 0)
-        {
-            Debug.LogWarning("VideoPlayer 或 VideoClips 未設定，直接切換場景！");
-            LoadNextGameScene();
-            yield break;
-        }
+        "大家好，我是《管理資訊系統》這門課的教授",
+        "在上課之前，大家需要先了解...#%^$^&%^*$^",
+        "...基本上就是這樣，另外，這門課有指定的原文書，大家別忘了在下次上課前準備好"
+    };
 
-        if (videoUI != null) videoUI.SetActive(true);
+    [Header("主角對話")]
+    [SerializeField] private GameObject playerDialoguePanel;
+    [SerializeField] private TMP_Text playerDialogueText;
 
-        // 依序播放陣列中的影片
-        foreach (VideoClip clip in videoClips)
-        {
-            if (clip == null) continue;
+    [TextArea(2, 5)]
+    public string[] playerDialogueLines = new string[]
+    {
+        "搞什麼鬼啊！工資系第一天開學，這本原文書一本要 3,500 台幣？！",
+        "我算一下……我扣掉住宿費後，口袋裡全部的生活費只剩下 500 塊欸！",
+        "買完這本書，我接下來這個月要去台南路邊吃土嗎？！",
+        "可是期末考一定要用這本書啊，如果不弄到一本，我這門課絕對被教授刷掉！"
+    };
 
-            videoPlayer.clip = clip;
-            videoPlayer.Prepare();
+    [Header("鳥鳥對話")]
+    [SerializeField] private GameObject birdDialoguePanel;
+    [SerializeField] private TMP_Text birdDialogueText;
 
-            // 等待影片預載完成
-            while (!videoPlayer.isPrepared)
-            {
-                yield return null;
-            }
+    [Header("系統提示")]
+    [SerializeField] private GameObject systemPanel;
+    [SerializeField] private TMP_Text systemText;
 
-            videoPlayer.Play();
+    [Header("下一個場景")]
+    [SerializeField] private string nextSceneName;
 
-            // 等待開始播放
-            while (!videoPlayer.isPlaying)
-            {
-                yield return null;
-            }
+    [Header("音效設定")]
+    public AudioClip bellSoundClip;
 
-            // 等待影片播放結束
-            while (videoPlayer.isPlaying)
-            {
-                yield return null;
-            }
-        }
+    [Header("搖擺與淡入參數")]
+    public float swingAngle = 20f;
+    public float swingSpeed = 8f;
+    public float fadeInDuration = 1.0f;
 
-        // 兩部影片均播放完畢後的後續處理
-        if (videoUI != null) videoUI.SetActive(false);
-        Debug.Log("所有影片播放完畢！開始轉場至 " + nextSceneName);
+    private AudioSource audioSource;
+    private CanvasGroup dialogueCanvasGroup;
 
-        // 影片播完後啟動轉場進入 Case2_GameScene01
-        LoadNextGameScene();
+    private int professorLineIndex = 0;
+    private int playerLineIndex = 0;
+
+    private DialogueState currentState = DialogueState.Professor;
+
+    private bool canClickToNext = false;
+
+    private enum DialogueState
+    {
+        Professor,
+        Player,
+        Bird,
+        System,
+        Finished
     }
 
-    private void LoadNextGameScene()
+    private void Awake()
     {
-        if (sceneTransition != null)
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
         {
-            sceneTransition.StartTransitionAndLoadScene(nextSceneName);
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.spatialBlend = 0f;
+        audioSource.volume = 1f;
+        audioSource.playOnAwake = false;
+
+        if (dialoguePanel != null)
+        {
+            dialogueCanvasGroup = dialoguePanel.GetComponent<CanvasGroup>();
+
+            if (dialogueCanvasGroup == null)
+            {
+                dialogueCanvasGroup =
+                    dialoguePanel.AddComponent<CanvasGroup>();
+            }
+
+            dialogueCanvasGroup.alpha = 0f;
+            dialoguePanel.SetActive(false);
+        }
+
+        if (bellImage != null)
+        {
+            bellImage.gameObject.SetActive(true);
+        }
+
+        playerDialoguePanel.SetActive(false);
+        birdDialoguePanel.SetActive(false);
+        systemPanel.SetActive(false);
+    }
+
+    private void Start()
+    {
+        playerNameText.text = GameData.PlayerName;
+
+        StartCoroutine(PlayStrictSequence());
+    }
+
+    public void OnProfessorClick()
+    {
+        Debug.Log("教授對話框被點了");
+        if (currentState != DialogueState.Professor)
+            return;
+
+        professorLineIndex++;
+
+        if (professorLineIndex < dialogueLines.Length)
+        {
+            dialogueText.text = dialogueLines[professorLineIndex];
         }
         else
         {
-            // 防呆機制：若場景中沒有 SceneTransition，則直接切換
-            SceneManager.LoadScene(nextSceneName);
+            ShowPlayerDialogue();
         }
+    }
+
+    public void OnPlayerClick()
+    {
+        if (currentState != DialogueState.Player)
+            return;
+
+        playerLineIndex++;
+
+        if (playerLineIndex < playerDialogueLines.Length)
+        {
+            playerDialogueText.text = playerDialogueLines[playerLineIndex];
+        }
+        else
+        {
+            ShowBirdDialogue();
+        }
+    }
+
+    public void OnBirdClick()
+    {
+        if (currentState != DialogueState.Bird)
+            return;
+
+        ShowSystemPanel();
+    }
+
+    private IEnumerator PlayStrictSequence()
+    {
+        float soundDuration =
+            bellSoundClip != null ? bellSoundClip.length : 2f;
+
+        if (bellSoundClip != null)
+        {
+            audioSource.clip = bellSoundClip;
+            audioSource.Play();
+        }
+
+        float elapsedTime = 0f;
+
+        Quaternion initialRotation =
+            bellImage != null
+                ? bellImage.localRotation
+                : Quaternion.identity;
+
+        while (elapsedTime < soundDuration)
+        {
+            if (bellImage != null)
+            {
+                float zRotation =
+                    Mathf.Sin(elapsedTime * swingSpeed) * swingAngle;
+
+                bellImage.localRotation =
+                    Quaternion.Euler(0, 0, zRotation);
+            }
+
+            elapsedTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        if (bellImage != null)
+        {
+            bellImage.localRotation = initialRotation;
+            bellImage.gameObject.SetActive(false);
+        }
+
+        ShowProfessorDialogue();
+
+        canClickToNext = true;
+    }
+
+    private void ShowProfessorDialogue()
+    {
+        currentState = DialogueState.Professor;
+
+        professorLineIndex = 0;
+
+        dialogueText.text =
+            dialogueLines[professorLineIndex];
+
+        dialoguePanel.SetActive(true);
+
+        dialogueCanvasGroup.alpha = 1f;
+    }
+
+    private void ShowPlayerDialogue()
+    {
+        dialoguePanel.SetActive(false);
+
+        currentState = DialogueState.Player;
+
+        playerLineIndex = 0;
+
+        playerDialogueText.text =
+            playerDialogueLines[playerLineIndex];
+
+        playerDialoguePanel.SetActive(true);
+    }
+
+    private void ShowBirdDialogue()
+    {
+        playerDialoguePanel.SetActive(false);
+
+        currentState = DialogueState.Bird;
+
+        birdDialogueText.text =
+            "主人的錢包在劇烈發抖！";
+
+        birdDialoguePanel.SetActive(true);
+    }
+
+    private void ShowSystemPanel()
+    {
+        birdDialoguePanel.SetActive(false);
+
+        currentState = DialogueState.System;
+
+        canClickToNext = false;
+
+        systemText.text =
+            "那就進入「書人不輸陣」平台，絕對可以在上面找到解決方法！";
+
+        systemPanel.SetActive(true);
+    }
+
+    public void EnterNextScene()
+    {
+        SceneManager.LoadScene(nextSceneName);
     }
 }
