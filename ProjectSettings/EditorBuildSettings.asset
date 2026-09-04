@@ -9,22 +9,61 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/Case2/classroomScene.unity
+    path: Assets/Scenes/Start/StartScene.unity
+    guid: 32e5ad4b036f6c2419eaf18dac1f8c30
+  - enabled: 1
+    path: Assets/Scenes/Start/PrologueOutdoor.unity
+    guid: b750b6b74a3017c49b243db15741ea2b
+  - enabled: 1
+    path: Assets/Scenes/Start/PrologueHome.unity
+    guid: 157a39c32c2b4cd4091d3e5a1dd1e418
+  - enabled: 1
+    path: Assets/Scenes/Case1/Case1Car.unity
+    guid: 33c96ab03a66b564680ee26b9c00dda6
+  - enabled: 1
+    path: Assets/Scenes/Case1/Case1Intro.unity
+    guid: 3e797144e1bbbed41860272ecbc366b4
+  - enabled: 1
+    path: Assets/Scenes/Case1/Case1Matching.unity
+    guid: d31782c22d77130439d6be57e2a34049
+  - enabled: 1
+    path: Assets/Scenes/Case1/Case1Travel.unity
+    guid: aa10aa0df3a542f4399ec40384bd5c0f
+  - enabled: 1
+    path: Assets/Scenes/Case2/Case2_01_ClassroomMove.unity
     guid: a9d7c9285e13b474cb7d77125845e034
   - enabled: 1
-    path: Assets/Scenes/Case2/classroom02.unity
+    path: Assets/Scenes/Case2/Case2_02_ClassroomStory.unity
     guid: 7eeff6f766462a943898044a129431e2
   - enabled: 1
-    path: Assets/Scenes/Case2/Case2_GameScene01.unity
-    guid: 5cd1f179299b8b549afb334f5c3ffc8a
+    path: Assets/Scenes/Case2/Case2_03_Stall.unity
+    guid: 6bdd6a209f9f04e449f0efc1d95f2304
   - enabled: 1
-    path: Assets/Scenes/Case2/Case2_GameScene02.unity
+    path: Assets/Scenes/Case2/Case2_04_SysTeach.unity
+    guid: 7a20deb9f8c85b44290e56673e60175b
+  - enabled: 1
+    path: Assets/Scenes/Case2/Case2_05_ScaleGame.unity
     guid: f5272d499fc907949a040f9cad54fa36
   - enabled: 1
-    path: Assets/Scenes/Case2/ScaleNext_B.unity
+    path: Assets/Scenes/Case2/Case2_06_NeedAnalyze.unity
+    guid: 5cd1f179299b8b549afb334f5c3ffc8a
+  - enabled: 1
+    path: Assets/Scenes/Case2/Case2_ScaleNext_B.unity
     guid: 2da60e0005c98284db5651f1d70047dc
   - enabled: 1
-    path: Assets/Scenes/Case2/ScaleNext_C.unity
+    path: Assets/Scenes/Case2/Case2_ScaleNext_C.unity
     guid: 4235d476b883a6841a8e5701b5e1c14e
+  - enabled: 1
+    path: Assets/Scenes/Case3/Case3_Scene.unity
+    guid: 7e4a5c5426072a54796fe1c054de7bc3
+  - enabled: 1
+    path: Assets/Scenes/Case3/Case3_SearchScene.unity
+    guid: 65af1be84bdfb3245bfa96671cb3d918
+  - enabled: 1
+    path: Assets/Scenes/Ending/EndingHatching.unity
+    guid: ecca7067fed479644b5586474c5d0f41
+  - enabled: 1
+    path: Assets/Scenes/Ending/Ending.unity
+    guid: 46eced93bc67a1046a98840710e471b6
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

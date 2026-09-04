@@ -10,7 +10,7 @@ public class ScaleNextB_Controller : MonoBehaviour
     public GameObject bookInfoPanel;      // 拖入 BookInfoPanel
     public Button backToScaleBtn;         // 拖入「重新選擇」按鈕
     public Button confirmBuyBtn;          // 拖入「確認購買」按鈕
-    public string previousSceneName = "Case2_GameScene02"; // 回天平場景名稱
+    public string previousSceneName = "Case2_05_ScaleGame"; // 回天平場景名稱
     public SceneTransition sceneTransition; // 拖入 TransitionCanvas 腳本
 
     [Header("【第二階段：錢袋歸零與數字倒數】")]

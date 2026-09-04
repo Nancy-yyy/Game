@@ -10,7 +10,7 @@ public class ScaleNextC_Controller : MonoBehaviour
     public GameObject bookInfoPanel;      
     public Button backToScaleBtn;         
     public Button confirmBuyBtn;          
-    public string previousSceneName = "Case2_GameScene02"; 
+    public string previousSceneName = "Case2_05_ScaleGame"; 
     public SceneTransition sceneTransition; 
 
     [Header("【第二階段：合約與手寫簽名】")]
@@ -42,9 +42,11 @@ public class ScaleNextC_Controller : MonoBehaviour
     private Vector2 sysMsgTargetPos;
     private Vector2 sysMsgHidePos;
 
-    [Header("【第五階段：鳥鳥回饋 (正確時彈出)】")]
+    [Header("【第五階段：鳥鳥回饋與返回攤位】")]
     public GameObject birdFeedbackBubble; 
     public TextMeshProUGUI birdFeedbackText; 
+    public Button birdFeedbackClickBtn;     // 點擊後進入攤位結尾（可綁在氣泡本身或透明按鈕）
+    public string stallSceneName = "Case2_03_Stall"; // 攤位場景名稱
 
     void Start()
     {
@@ -61,8 +63,8 @@ public class ScaleNextC_Controller : MonoBehaviour
         // 初始化 System_msg 隱藏位置
         if (systemMsgPanel != null)
         {
-            sysMsgTargetPos = systemMsgPanel.anchoredPosition; // 記錄編輯器中放好的位置
-            sysMsgHidePos = new Vector2(sysMsgTargetPos.x, sysMsgTargetPos.y + 800f); // 向上偏移移出場外
+            sysMsgTargetPos = systemMsgPanel.anchoredPosition;
+            sysMsgHidePos = new Vector2(sysMsgTargetPos.x, sysMsgTargetPos.y + 800f);
             systemMsgPanel.anchoredPosition = sysMsgHidePos;
             systemMsgPanel.gameObject.SetActive(false);
         }
@@ -71,7 +73,7 @@ public class ScaleNextC_Controller : MonoBehaviour
 
         if (sceneTransition == null) sceneTransition = FindObjectOfType<SceneTransition>();
 
-        // 綁定按鈕
+        // 綁定按鈕事件
         if (backToScaleBtn != null)
         {
             backToScaleBtn.onClick.RemoveAllListeners();
@@ -109,6 +111,13 @@ public class ScaleNextC_Controller : MonoBehaviour
         {
             submitReasonsBtn.onClick.RemoveAllListeners();
             submitReasonsBtn.onClick.AddListener(OnSubmitReasonsClicked);
+        }
+
+        // 鳥鳥回饋點擊監聽：手動點擊後才觸發返回攤位
+        if (birdFeedbackClickBtn != null)
+        {
+            birdFeedbackClickBtn.onClick.RemoveAllListeners();
+            birdFeedbackClickBtn.onClick.AddListener(OnBirdFeedbackClicked);
         }
     }
 
@@ -164,7 +173,6 @@ public class ScaleNextC_Controller : MonoBehaviour
         StartCoroutine(ExecuteContractAndBookSequence());
     }
 
-    // 蓋章放慢 ➔ 等3秒收書包 ➔ 等3秒清空合約進入題目
     private IEnumerator ExecuteContractAndBookSequence()
     {
         yield return new WaitForSeconds(0.2f);
@@ -174,7 +182,7 @@ public class ScaleNextC_Controller : MonoBehaviour
             audioSource.PlayOneShot(stampSFX);
         }
 
-        // 1. 印章速度放慢砸下 (0.45 秒)
+        // 1. 印章砸下
         if (stampImage != null)
         {
             stampImage.SetActive(true);
@@ -193,10 +201,9 @@ public class ScaleNextC_Controller : MonoBehaviour
             stampRect.localScale = originalScale;
         }
 
-        // 2. 蓋章後間隔 3 秒
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(1.5f);
 
-        // 3. 背包與書本出現，書本滑入背包
+        // 2. 背包與書本出現，書本滑入背包
         if (backpackObj != null) backpackObj.SetActive(true);
 
         if (bookRect != null)
@@ -229,10 +236,9 @@ public class ScaleNextC_Controller : MonoBehaviour
             bookRect.anchoredPosition = targetPos;
         }
 
-        // 4. 收納完成後再間隔 3 秒
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(1.5f);
 
-        // 5. 清空合約與背包，開啟理由選擇題
+        // 3. 開啟理由選擇題
         if (contractPanel != null) contractPanel.SetActive(false);
         if (reasonQuizPanel != null)
         {
@@ -241,7 +247,6 @@ public class ScaleNextC_Controller : MonoBehaviour
         }
     }
 
-    // 勾選答案檢驗
     public void OnSubmitReasonsClicked()
     {
         bool isCorrect = (opt1_FourMonths != null && opt1_FourMonths.isOn) &&
@@ -252,9 +257,9 @@ public class ScaleNextC_Controller : MonoBehaviour
 
         if (isCorrect)
         {
-            // 選對了 -> 隱藏錯誤訊息，彈出小鳥對話框
             if (systemMsgPanel != null) systemMsgPanel.gameObject.SetActive(false);
 
+            // 彈出鳥鳥回饋氣泡，不再以時間倒數自動跳轉
             if (birdFeedbackBubble != null && birdFeedbackText != null)
             {
                 birdFeedbackBubble.SetActive(true);
@@ -266,20 +271,34 @@ public class ScaleNextC_Controller : MonoBehaviour
         }
         else
         {
-            // 選錯了 -> 不出現小鳥，觸發 System_msg 從上方滑入 5 秒後滑出
             if (activeSysMsgRoutine != null) StopCoroutine(activeSysMsgRoutine);
             activeSysMsgRoutine = StartCoroutine(ShowSystemErrorSlideRoutine());
         }
     }
 
-    // System_msg 下滑 -> 停留 5 秒 -> 上滑移出
+    // 玩家點擊鳥鳥氣泡或按鈕後觸發
+    // 玩家點擊鳥鳥氣泡後觸發
+    public void OnBirdFeedbackClicked()
+    {
+        // ⭐ 標記攤位為第七幕「最終感悟結尾」對話狀態
+        Case2State.StallPhase = 3;
+
+        if (sceneTransition != null)
+        {
+            sceneTransition.StartTransitionAndLoadScene(stallSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(stallSceneName);
+        }
+    }
+
     private IEnumerator ShowSystemErrorSlideRoutine()
     {
         if (systemMsgPanel == null) yield break;
 
         systemMsgPanel.gameObject.SetActive(true);
 
-        // 1. 從上方外部滑入到目前位置
         float time = 0;
         while (time < sysMsgSlideDuration)
         {
@@ -289,10 +308,8 @@ public class ScaleNextC_Controller : MonoBehaviour
         }
         systemMsgPanel.anchoredPosition = sysMsgTargetPos;
 
-        // 2. 停留 5 秒讓玩家閱讀思考
         yield return new WaitForSeconds(sysMsgDisplayDuration);
 
-        // 3. 上滑移出畫面
         time = 0;
         while (time < sysMsgSlideDuration)
         {

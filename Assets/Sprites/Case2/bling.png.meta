@@ -131,12 +131,12 @@ TextureImporter:
       name: bling_0
       rect:
         serializedVersion: 2
-        x: 29
-        y: 5
-        width: 225
+        x: 31
+        y: 3
+        width: 255
         height: 462
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -153,108 +153,20 @@ TextureImporter:
       name: bling_1
       rect:
         serializedVersion: 2
-        x: 224
-        y: 350
-        width: 44
-        height: 59
+        x: 0
+        y: 0
+        width: 288
+        height: 474
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 3022c3e0e8d3e9350800000000000000
+      spriteID: fc861854fcba86e428a0f3f39c593c96
       internalID: 6025321031801774595
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bling_2
-      rect:
-        serializedVersion: 2
-        x: 243
-        y: 402
-        width: 24
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fcef536bcd52076d0800000000000000
-      internalID: -2994852122321355057
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bling_3
-      rect:
-        serializedVersion: 2
-        x: 267
-        y: 396
-        width: 14
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: ef8f85227778facc0800000000000000
-      internalID: -3697587823300773634
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bling_4
-      rect:
-        serializedVersion: 2
-        x: 268
-        y: 376
-        width: 15
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b26a90a9bca226080800000000000000
-      internalID: -9195740435186080213
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: bling_5
-      rect:
-        serializedVersion: 2
-        x: 257
-        y: 342
-        width: 23
-        height: 23
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 3baef950a82678eb0800000000000000
-      internalID: -4717693739707929933
       vertices: []
       indices: 
       edges: []
@@ -263,7 +175,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 2b5f86b544b6a4341b4d274f11e8f254
     internalID: 0
     vertices: []
     indices: 

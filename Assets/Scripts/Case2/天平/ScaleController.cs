@@ -248,11 +248,11 @@ public class ScaleController : MonoBehaviour
 
         if (currentSelectedCard == "B")
         {
-            targetScene = "ScaleNext_B";
+            targetScene = "Case2_ScaleNext_B";
         }
         else if (currentSelectedCard == "C")
         {
-            targetScene = "ScaleNext_C";
+            targetScene = "Case2_ScaleNext_C";
         }
 
         if (string.IsNullOrEmpty(targetScene)) return;
