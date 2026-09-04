@@ -67,8 +67,6 @@ public class PrologueOutdoorManager : MonoBehaviour
             return;
         }
 
-        GameData.BirdName = birdName;
-
         birdNamingPanel.SetActive(false);
 
         birdReplyUI.SetActive(true);

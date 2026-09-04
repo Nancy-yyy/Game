@@ -6,6 +6,14 @@ using UnityEngine.SceneManagement;
 
 public class Case1CarManager : MonoBehaviour
 {
+    // 版本判斷
+    [Header("Feedback Version")]
+    [SerializeField] private TMP_Text driverWrongText;
+    [SerializeField] private TMP_Text oilTankWrongText;
+
+    [SerializeField] private GameObject systemAnalysisPanel;
+    [SerializeField] private TMP_Text systemAnalysisText;
+        
     [SerializeField]
     private GameObject systemAssetPanel;
 
@@ -64,6 +72,9 @@ public class Case1CarManager : MonoBehaviour
     private AudioSource correctAudio;
 
     [SerializeField]
+    private AudioSource wrongAudio;
+
+    [SerializeField]
     private GameObject playerEndDialogueUI;
 
     [SerializeField]
@@ -76,6 +87,15 @@ public class Case1CarManager : MonoBehaviour
     private GameObject birdEndDialogueUI;
     
     private int carExplainStep = 0;
+
+    // 變數：用來記住看完解析後要做什麼
+    private enum AnalysisNextAction
+    {
+        ReturnToQuestion,
+        ContinueAfterTrunk
+    }
+
+    private AnalysisNextAction analysisNextAction;
 
     private void Start()
     {
@@ -101,6 +121,7 @@ public class Case1CarManager : MonoBehaviour
 
         driverSeatWrongPanel.SetActive(false);
         oilTankWrongPanel.SetActive(false);
+        systemAnalysisPanel.SetActive(false);
 
         playerEndDialogueUI.SetActive(false);
         birdEndDialogueUI.SetActive(false);
@@ -205,8 +226,25 @@ public class Case1CarManager : MonoBehaviour
 
     public void ClickDriverSeat()
     {
+        if (wrongAudio != null)
+        {
+            wrongAudio.Play();
+        }
+
         carInteractionPanel.SetActive(false);
         interactionHintUI.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            driverWrongText.text =
+                "選錯了！駕駛座已經坐著學姐了啦！";
+        }
+        else
+        {
+            driverWrongText.text =
+                "選錯了！駕駛座目前已經由學姐使用，因此它不是閒置容量。";
+        }
+        
         driverSeatWrongPanel.SetActive(true);
     }
 
@@ -214,15 +252,45 @@ public class Case1CarManager : MonoBehaviour
     {
         driverSeatWrongPanel.SetActive(false);
         driverSeatPreviewImage.SetActive(false);
-        interactiveCarImage.SetActive(true);
-        carInteractionPanel.SetActive(true);
-        interactionHintUI.SetActive(true);
+
+        if (GameData.FeedbackMode == FeedbackMode.Deep)
+        {
+            analysisNextAction = AnalysisNextAction.ReturnToQuestion;
+
+            systemAnalysisText.text =
+                "「存在」不代表「閒置」。只有目前未被使用、又可以提供其他用途的部分，才具有重新配置的可能。";
+
+            systemAnalysisPanel.SetActive(true);
+        }
+        else
+        {
+            interactiveCarImage.SetActive(true);
+            carInteractionPanel.SetActive(true);
+            interactionHintUI.SetActive(true);
+        }
     }
 
     public void ClickOilTank()
     {
+        if (wrongAudio != null)
+        {
+            wrongAudio.Play();
+        }
+
         carInteractionPanel.SetActive(false);
         interactionHintUI.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            oilTankWrongText.text =
+                "選錯了！這裡不是本題要找的閒置空間，再試一次吧！";
+        }
+        else
+        {
+            oilTankWrongText.text =
+                "選錯了！汽油會隨著行程被消耗，它屬於這趟旅程需要使用的能源，而不是可以另外提供他人使用的「剩餘容量」。";
+        }
+
         oilTankWrongPanel.SetActive(true);
     }
 
@@ -230,9 +298,22 @@ public class Case1CarManager : MonoBehaviour
     {
         oilTankWrongPanel.SetActive(false);
         oilTankPreviewImage.SetActive(false);
-        interactiveCarImage.SetActive(true);
-        carInteractionPanel.SetActive(true);
-        interactionHintUI.SetActive(true);
+
+        if (GameData.FeedbackMode == FeedbackMode.Deep)
+        {
+            analysisNextAction = AnalysisNextAction.ReturnToQuestion;
+
+            systemAnalysisText.text =
+                "判斷閒置資源時，要找的是「原本已經存在，但目前沒有被充分利用的資源或容量」。";
+
+            systemAnalysisPanel.SetActive(true);
+        }
+        else
+        {
+            interactiveCarImage.SetActive(true);
+            carInteractionPanel.SetActive(true);
+            interactionHintUI.SetActive(true);
+        }
     }
 
     public void ClickTrunk()
@@ -248,7 +329,40 @@ public class Case1CarManager : MonoBehaviour
             correctAudio.Play();
         }
 
-        playerEndDialogueUI.SetActive(true);
+        if (GameData.FeedbackMode == FeedbackMode.Deep)
+        {
+            analysisNextAction = AnalysisNextAction.ContinueAfterTrunk;
+
+            systemAnalysisText.text =
+                "共享經濟不一定要創造新的資源。\n像空座位、剩餘行李空間，都可以是原本存在卻沒有被充分利用的容量。若透過媒合讓其他有需求的人使用，就能提高既有資產的利用程度。";
+
+            systemAnalysisPanel.SetActive(true);
+        }
+        else
+        {
+            playerEndDialogueUI.SetActive(true);
+        }
+    }
+
+    public void CloseSystemAnalysis()
+    {
+        systemAnalysisPanel.SetActive(false);
+
+        if (analysisNextAction == AnalysisNextAction.ReturnToQuestion)
+        {
+            interactiveCarImage.SetActive(true);
+
+            driverSeatPreviewImage.SetActive(false);
+            oilTankPreviewImage.SetActive(false);
+            trunkPreviewImage.SetActive(false);
+
+            carInteractionPanel.SetActive(true);
+            interactionHintUI.SetActive(true);
+        }
+        else if (analysisNextAction == AnalysisNextAction.ContinueAfterTrunk)
+        {
+            playerEndDialogueUI.SetActive(true);
+        }
     }
 
     public void ShowBirdEndDialogue()

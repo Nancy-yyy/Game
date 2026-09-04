@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
 public class DialogueManager : MonoBehaviour
 {
-    [Header("UI 元件")]
+    [Header("UI 對話框與提示元件")]
     public GameObject dialoguePanel;       
     public CanvasGroup dialogueCanvasGroup;
     public GameObject hintPanel;           
@@ -12,15 +13,17 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI speakerNameText;
     public GameObject speakerHeadImage;    
 
-    [Header("角色與腳本")]
+    [Header("遊戲角色與移動控制")]
     public GameObject playerObject;        
-    public PlayerMovement playerMovement; 
+    public MonoBehaviour playerMovementScript; // 手動把你的移動腳本拖進來！
 
     [Header("預設對話設定")]
     [TextArea(2, 5)]
     public string initialDialogue = "哇！原來這就是新教室...看起來好大阿...";
     public string speakerName = "主角";
     public Sprite speakerSprite;           
+
+    [Header("漸顯動畫設定")]
     public float fadeInDuration = 0.5f;    
 
     private bool isDialogueActive = false;
@@ -29,24 +32,30 @@ public class DialogueManager : MonoBehaviour
     {
         if (playerObject != null)
         {
-            playerObject.SetActive(true);
+            // 讓 Player 保持 Active，但一開始關閉圖片與碰撞
+            playerObject.SetActive(true); 
+            
+            SpriteRenderer sr = playerObject.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = false;
 
-            if (playerMovement == null)
+            Collider2D col = playerObject.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            // 一開始強制關閉移動腳本
+            if (playerMovementScript != null) 
             {
-                playerMovement = playerObject.GetComponent<PlayerMovement>();
+                playerMovementScript.enabled = false;
             }
-
-            if (playerMovement != null) playerMovement.enabled = false;
-
-            // 隱藏外觀與碰撞，維持 Input System 運作
-            foreach (var sr in playerObject.GetComponentsInChildren<SpriteRenderer>()) sr.enabled = false;
-            foreach (var col in playerObject.GetComponentsInChildren<Collider2D>()) col.enabled = false;
         }
 
+        // 隱藏 hintPanel
         if (hintPanel != null) hintPanel.SetActive(false);
+
+        // 初始化對話框透明度為 0
         if (dialoguePanel != null) dialoguePanel.SetActive(true);
         if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
 
+        // 啟動漸顯協程
         ShowDialogue(initialDialogue, speakerName);
         StartCoroutine(FadeInDialogue());
     }
@@ -55,7 +64,16 @@ public class DialogueManager : MonoBehaviour
     {
         if (dialogueText != null) dialogueText.text = content;
         if (speakerNameText != null) speakerNameText.text = name;
-        if (speakerHeadImage != null) speakerHeadImage.SetActive(true);
+
+        if (speakerHeadImage != null)
+        {
+            speakerHeadImage.SetActive(true);
+            Image img = speakerHeadImage.GetComponent<Image>();
+            if (img != null && speakerSprite != null)
+            {
+                img.sprite = speakerSprite;
+            }
+        }
     }
 
     IEnumerator FadeInDialogue()
@@ -64,40 +82,63 @@ public class DialogueManager : MonoBehaviour
         while (timer < fadeInDuration)
         {
             timer += Time.deltaTime;
-            if (dialogueCanvasGroup != null && fadeInDuration > 0f)
+            if (dialogueCanvasGroup != null)
             {
                 dialogueCanvasGroup.alpha = Mathf.Clamp01(timer / fadeInDuration);
             }
             yield return null;
         }
 
-        if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 1f;
+        if (dialogueCanvasGroup != null)
+        {
+            dialogueCanvasGroup.alpha = 1f;
+        }
+
         isDialogueActive = true;
     }
 
+    // 當點擊透明按鈕時觸發
     public void OnDialogueClicked()
     {
-        if (!isDialogueActive) return;
+        if (!isDialogueActive) return; 
+
         CloseDialogueAndStartGame();
     }
 
     void CloseDialogueAndStartGame()
     {
-        if (dialoguePanel != null) dialoguePanel.SetActive(false);
+        // 1. 關閉對話框
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
         isDialogueActive = false;
 
+        // 2. 讓 Player 的圖片與碰撞恢復顯示
         if (playerObject != null) 
         {
-            foreach (var sr in playerObject.GetComponentsInChildren<SpriteRenderer>()) sr.enabled = true;
-            foreach (var col in playerObject.GetComponentsInChildren<Collider2D>()) col.enabled = true;
+            SpriteRenderer sr = playerObject.GetComponent<SpriteRenderer>();
+            if (sr != null) sr.enabled = true;
+
+            Collider2D col = playerObject.GetComponent<Collider2D>();
+            if (col != null) col.enabled = true;
         }
 
-        if (hintPanel != null) hintPanel.SetActive(true);
-
-        if (playerMovement != null)
+        // 3. 讓 hintPanel 出現
+        if (hintPanel != null) 
         {
-            playerMovement.enabled = true;
-            Debug.Log("【成功】玩家移動已解鎖！");
+            hintPanel.SetActive(true);
+        }
+
+        // 4. 解鎖玩家移動腳本
+        if (playerMovementScript != null)
+        {
+            playerMovementScript.enabled = true; 
+            Debug.Log("【成功】玩家移動腳本已手動解鎖！");
+        }
+        else
+        {
+            Debug.LogError("【錯誤】你忘記在 Inspector 把移動腳本拖進 Player Movement Script 格子裡了！");
         }
     }
 }

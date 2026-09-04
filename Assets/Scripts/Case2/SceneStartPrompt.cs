@@ -3,9 +3,8 @@ using TMPro; // 如果你使用的是 TextMeshPro
 
 public class SceneStartPrompt : MonoBehaviour
 {
-    playerNameText.text = GameData.PlayerName;
-    
     [SerializeField] private TMP_Text playerNameText;
+    
     [Header("UI 提示框物件")]
     public GameObject promptUI;       // 把你的提示框面板拖進來
 
@@ -16,6 +15,8 @@ public class SceneStartPrompt : MonoBehaviour
 
     void Start()
     {
+        playerNameText.text = GameData.PlayerName;
+        
         // 1. 設定要顯示的文字
         if (promptText != null)
         {

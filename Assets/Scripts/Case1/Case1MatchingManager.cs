@@ -9,29 +9,13 @@ public class Case1MatchingManager : MonoBehaviour
     [Header("Player UI")]
     [SerializeField] private GameObject playerDialogueUI;
     [SerializeField] private TMP_Text playerNameText;
-    [SerializeField] private TMP_Text playerDialogueText;
-    [SerializeField] private GameObject playerNextTriangle;
-    [SerializeField] private Image playerImage;
 
-    [Header("Player Sprites")]
-    [SerializeField] private Sprite playerFirstSprite;
-    [SerializeField] private Sprite playerSecondSprite;
+    [SerializeField] private GameObject systemIntroPanel;
+    [SerializeField] private TMP_Text systemIntroText;
+    [SerializeField] private GameObject systemIntroNextTriangle;
+    [SerializeField] private GameObject systemIntroConfirmButton;
 
-
-    [Header("Bird UI")]
-    [SerializeField] private GameObject birdDialogueUI;
-    [SerializeField] private TMP_Text birdDialogueText;
-    [SerializeField] private GameObject birdNextTriangle;
-    [SerializeField] private Image birdImage;
-    [SerializeField] private Image birdDialogueBoxImage;
-
-    [Header("Bird Sprites")]
-    [SerializeField] private Sprite birdFirstSprite;
-    [SerializeField] private Sprite birdSecondSprite;
-
-    [Header("Bird Dialogue Box Sprites")]
-    [SerializeField] private Sprite birdFirstDialogueBoxSprite;
-    [SerializeField] private Sprite birdSecondDialogueBoxSprite;
+    private int systemIntroStep = 0;
 
     [SerializeField]
     private GameObject matchingOrderPanel;
@@ -47,6 +31,17 @@ public class Case1MatchingManager : MonoBehaviour
     [SerializeField] private TMP_Text answerSlot4Text;
 
     [SerializeField] private GameObject wrongPanel;
+    
+    [Header("Feedback Version")]
+    [SerializeField] private TMP_Text wrongText;
+
+    [SerializeField] private GameObject systemHintPanel;
+
+    [SerializeField] private GameObject systemAnalysisPanel;
+    [SerializeField] private TMP_Text systemAnalysisText;
+
+    [SerializeField] private GameObject systemMessagePanel;
+
     [SerializeField] private AudioSource wrongAudio;
     [SerializeField] private AudioSource correctAudio;
 
@@ -55,6 +50,12 @@ public class Case1MatchingManager : MonoBehaviour
 
     [SerializeField] private GameObject supplyQuestionPanel;
     [SerializeField] private GameObject questionWrongPanel;
+    [Header("Supply Feedback")]
+    [SerializeField] private TMP_Text questionWrongText;
+
+    [SerializeField] private GameObject supplyHintPanel;
+    [SerializeField] private GameObject supplyAnalysisPanel;
+    [SerializeField] private GameObject supplyMessagePanel;
 
     [SerializeField] private GameObject matchingSuccessPanel;
     [SerializeField] private TMP_Text matchingSuccessText;
@@ -62,102 +63,90 @@ public class Case1MatchingManager : MonoBehaviour
     [SerializeField] private GameObject matchingSuccessConfirmButton;
     [SerializeField] private GameObject sustainabilityWarningPanel;
 
-    private int dialogueStep = 0;
+    [Header("Case 1 Summary")]
+    [SerializeField] private GameObject case1SummaryPanel;
+    [SerializeField] private GameObject case1SummaryAnalysisPanel;
+    [SerializeField] private GameObject case1SummaryMessagePanel;
 
     private int selectedCount = 0;
 
     private List<string> selectedOrder = new List<string>();
     private List<GameObject> selectedCards = new List<GameObject>();
 
+    private enum MatchingFeedbackFlow
+    {
+        None,
+        Wrong,
+        Correct
+    }
+
+    private MatchingFeedbackFlow matchingFeedbackFlow = MatchingFeedbackFlow.None;
+
     private void Start()
     {
         playerDialogueUI.SetActive(true);
-        birdDialogueUI.SetActive(false);
 
         playerNameText.text = GameData.PlayerName;
         playerSeatNameText.text = GameData.PlayerName;
 
-        playerDialogueText.text =
-            "那我還有一個問題... 共乘會比客運便宜嗎？";
+        systemIntroPanel.SetActive(false);
+        systemIntroConfirmButton.SetActive(false);
 
-        playerImage.sprite = playerFirstSprite;
-
-        playerNextTriangle.SetActive(true);
         matchingOrderPanel.SetActive(false);
 
         wrongPanel.SetActive(false);
+        systemHintPanel.SetActive(false);
+        systemAnalysisPanel.SetActive(false);
+        systemMessagePanel.SetActive(false);
         playerSeatDialogueUI.SetActive(false);
         supplyQuestionPanel.SetActive(false);
 
         questionWrongPanel.SetActive(false);
+        supplyHintPanel.SetActive(false);
+        supplyAnalysisPanel.SetActive(false);
+        supplyMessagePanel.SetActive(false);
         matchingSuccessPanel.SetActive(false);
         matchingSuccessConfirmButton.SetActive(false);
         sustainabilityWarningPanel.SetActive(false);
+
+        case1SummaryPanel.SetActive(false);
+        case1SummaryAnalysisPanel.SetActive(false);
+        case1SummaryMessagePanel.SetActive(false);
     }
 
-
-    public void OnPlayerDialogueClicked()
+    public void ShowSystemIntro()
     {
-        if (dialogueStep == 0)
+        playerDialogueUI.SetActive(false);
+
+        systemIntroPanel.SetActive(true);
+
+        systemIntroStep = 0;
+
+        systemIntroText.text =
+            "通常會依行程與交通成本分攤，但不一定每一趟都比其他交通方式便宜！";
+
+        systemIntroNextTriangle.SetActive(true);
+        systemIntroConfirmButton.SetActive(false);
+    }
+
+    public void NextSystemIntro()
+    {
+        if (systemIntroStep == 0)
         {
-            playerNextTriangle.SetActive(false);
+            systemIntroText.text =
+                "接下來還需要透過平台「確認行程與時間」才算完成媒合喔！";
 
-            birdDialogueUI.SetActive(true);
+            systemIntroNextTriangle.SetActive(false);
+            systemIntroConfirmButton.SetActive(true);
 
-            birdDialogueText.text =
-                "通常會依行程與交通成本分攤，但不一定每一趟都比其他交通方式便宜！";
-
-            birdImage.sprite = birdFirstSprite;
-            birdDialogueBoxImage.sprite = birdFirstDialogueBoxSprite;
-
-            birdNextTriangle.SetActive(true);
-
-            dialogueStep = 1;
-        }
-
-        else if (dialogueStep == 2)
-        {
-            playerNextTriangle.SetActive(false);
-
-            birdDialogueText.text =
-                "等等！你這樣會被當成變態打出來好嗎！還需要『媒合行程與時間』才算完成！";
-
-            birdImage.sprite = birdSecondSprite;
-            birdDialogueBoxImage.sprite = birdSecondDialogueBoxSprite;
-
-            birdNextTriangle.SetActive(true);
-
-            dialogueStep = 3;
+            systemIntroStep = 1;
         }
     }
 
-    public void OnBirdDialogueClicked()
+    public void ShowMatchingOrderPanel()
     {
-        if (dialogueStep == 1)
-        {
-            birdNextTriangle.SetActive(false);
-
-            playerDialogueText.text =
-                "好的，那我現在直接去學姐家找她嗎？";
-
-            playerImage.sprite = playerSecondSprite;
-
-            playerNextTriangle.SetActive(true);
-
-            dialogueStep = 2;
-        }
-
-        else if (dialogueStep == 3)
-        {
-            birdNextTriangle.SetActive(false);
-
-            playerDialogueUI.SetActive(false);
-            birdDialogueUI.SetActive(false);
-
-            matchingOrderPanel.SetActive(true);
-
-            dialogueStep = 4;
-        }
+        systemIntroPanel.SetActive(false);
+        matchingOrderPanel.SetActive(true);
     }
 
     public void SelectCard(string cardID, string cardDisplayText, GameObject card)
@@ -275,15 +264,58 @@ public class Case1MatchingManager : MonoBehaviour
                 correctAudio.Play();
             }
 
-            matchingOrderPanel.SetActive(false);
-            playerSeatDialogueUI.SetActive(true);
+            if (GameData.FeedbackMode == FeedbackMode.Simple)
+            {
+                matchingOrderPanel.SetActive(false);
+                playerSeatDialogueUI.SetActive(true);
+            }
+            else
+            {
+                matchingFeedbackFlow = MatchingFeedbackFlow.Correct;
+
+                matchingOrderPanel.SetActive(false);
+
+                systemAnalysisText.text =
+                    "車主先提供「空位、時間、路線」等供給資訊，乘客提出交通需求，平台協助搜尋與配對，最後再由雙方確認。";
+
+                systemAnalysisPanel.SetActive(true);
+            }
         }
         else
         {
-            if (wrongAudio != null)
-            {
-                wrongAudio.Play();
-            }
+            ShowWrongMatchingFeedback();
+        }
+    }
+
+    public void CloseSystemMessage()
+    {
+        systemMessagePanel.SetActive(false);
+        matchingOrderPanel.SetActive(false);
+        playerSeatDialogueUI.SetActive(true);
+    }
+
+    private void ShowWrongMatchingFeedback()
+    {
+        if (wrongAudio != null)
+        {
+            wrongAudio.Play();
+        }
+
+        matchingOrderPanel.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            wrongText.text =
+                "順序錯誤，請重新排列！";
+
+            wrongPanel.SetActive(true);
+        }
+        else
+        {
+            matchingFeedbackFlow = MatchingFeedbackFlow.Wrong;
+
+            wrongText.text =
+                "順序還不正確。";
 
             wrongPanel.SetActive(true);
         }
@@ -292,6 +324,39 @@ public class Case1MatchingManager : MonoBehaviour
     public void CloseWrongPanel()
     {
         wrongPanel.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            matchingOrderPanel.SetActive(true);
+        }
+        else
+        {
+            systemHintPanel.SetActive(true);
+        }
+    }
+
+    public void CloseSystemHint()
+    {
+        systemHintPanel.SetActive(false);
+
+        systemAnalysisText.text =
+            "平台媒合通常從資源資訊出現開始，再由需求者搜尋，接著比對雙方條件，最後才進入確認交易。";
+
+        systemAnalysisPanel.SetActive(true);
+    }
+
+    public void CloseSystemAnalysis()
+    {
+        systemAnalysisPanel.SetActive(false);
+
+        if (matchingFeedbackFlow == MatchingFeedbackFlow.Wrong)
+        {
+            matchingOrderPanel.SetActive(true);
+        }
+        else if (matchingFeedbackFlow == MatchingFeedbackFlow.Correct)
+        {
+            systemMessagePanel.SetActive(true);
+        }
     }
 
     public void ShowSupplyQuestion()
@@ -313,9 +378,17 @@ public class Case1MatchingManager : MonoBehaviour
         }
 
         supplyQuestionPanel.SetActive(false);
-        matchingSuccessPanel.SetActive(true);
-        matchingSuccessNextTriangle.SetActive(true);
-        matchingSuccessConfirmButton.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            matchingSuccessPanel.SetActive(true);
+            matchingSuccessNextTriangle.SetActive(true);
+            matchingSuccessConfirmButton.SetActive(false);
+        }
+        else
+        {
+            supplyAnalysisPanel.SetActive(true);
+        }
     }
 
     public void ChooseAnswerC()
@@ -330,12 +403,49 @@ public class Case1MatchingManager : MonoBehaviour
             wrongAudio.Play();
         }
 
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            questionWrongText.text =
+                "答錯了，再想想目前剩下多少空位！";
+        }
+        else
+        {
+            questionWrongText.text =
+                "答錯了。\n需求人數增加，但可以提供的座位數沒有改變。";
+        }
+
         questionWrongPanel.SetActive(true);
     }
 
     public void CloseQuestionWrongPanel()
     {
         questionWrongPanel.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Deep)
+        {
+            supplyQuestionPanel.SetActive(false);
+            supplyHintPanel.SetActive(true);
+        }
+    }
+
+    public void CloseSupplyHint()
+    {
+        supplyHintPanel.SetActive(false);
+        supplyQuestionPanel.SetActive(true);
+    }
+
+    public void CloseSupplyAnalysis()
+    {
+        supplyAnalysisPanel.SetActive(false);
+        supplyMessagePanel.SetActive(true);
+    }
+
+    public void CloseSupplyMessage()
+    {
+        supplyMessagePanel.SetActive(false);
+        matchingSuccessPanel.SetActive(true);
+        matchingSuccessNextTriangle.SetActive(true);
+        matchingSuccessConfirmButton.SetActive(false);
     }
 
     public void ShowSecondSuccessMessage()
@@ -353,8 +463,39 @@ public class Case1MatchingManager : MonoBehaviour
         sustainabilityWarningPanel.SetActive(true);
     }
 
-    public void EnterCase1Travel()
+    public void CloseSustainabilityWarning()
     {
+        sustainabilityWarningPanel.SetActive(false);
+        case1SummaryPanel.SetActive(true);
+        if (correctAudio != null)
+        {
+            correctAudio.Play();
+        }
+    }
+
+    public void CloseCase1Summary()
+    {
+        case1SummaryPanel.SetActive(false);
+
+        if (GameData.FeedbackMode == FeedbackMode.Simple)
+        {
+            SceneManager.LoadScene("Case1Travel");
+        }
+        else
+        {
+            case1SummaryAnalysisPanel.SetActive(true);
+        }
+    }
+
+    public void CloseCase1SummaryAnalysis()
+    {
+        case1SummaryAnalysisPanel.SetActive(false);
+        case1SummaryMessagePanel.SetActive(true);
+    }
+
+    public void CloseCase1SummaryMessage()
+    {
+        case1SummaryMessagePanel.SetActive(false);
         SceneManager.LoadScene("Case1Travel");
     }
 }
