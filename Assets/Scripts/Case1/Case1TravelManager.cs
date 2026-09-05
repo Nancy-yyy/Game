@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Video;
+using UnityEngine.SceneManagement;
 
 public class Case1TravelManager : MonoBehaviour
 {
@@ -35,5 +36,10 @@ public class Case1TravelManager : MonoBehaviour
     {
         playerNextTriangle.SetActive(false);
         birdDialogueUI.SetActive(true);
+    }
+    
+    public void EnterCase2()
+    {
+        SceneManager.LoadScene("Case2_01_ClassroomMove");
     }
 }

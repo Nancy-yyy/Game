@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fb0f1f7eb50406e488b8e301c813c6cb
+guid: 2c36dac245c02204390e4e2476353a55
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2824329110137553542
-    second: cellphone_dcard_0
+      213: -2758659973313796017
+    second: "\u9580\u7981\u5F62\u5F0F_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cellphone_dcard_0
+      name: "\u9580\u7981\u5F62\u5F0F_0"
       rect:
         serializedVersion: 2
-        x: 72
-        y: 29
-        width: 892
-        height: 1491
+        x: 22
+        y: 11
+        width: 1261
+        height: 1177
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a7db47563a7fdc8d0800000000000000
-      internalID: -2824329110137553542
+      spriteID: f48ea8ace5547b9d0800000000000000
+      internalID: -2758659973313796017
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cellphone_dcard_0: -2824329110137553542
+      "\u9580\u7981\u5F62\u5F0F_0": -2758659973313796017
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

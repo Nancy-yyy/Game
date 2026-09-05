@@ -315,8 +315,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u4FDD\u5B58\u55CE\uFF1F\n\u6211\u9700\u8981\u4E00\u76F4\u7559\u8457\u9019\u672C\u66F8\u55CE...\uFF1F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
-  m_sharedMaterial: {fileID: 7110082202781152627, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
+  m_sharedMaterial: {fileID: -1617542280229718651, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -669,8 +669,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u4EC0\u9EBC\u6642\u9593\u9700\u8981\u7528\u5230\u9019\u672C\u66F8\u5462...\n\u61C9\u8A72\u53EA\u6709\u4E0A\u8AB2\u548C\u8907\u7FD2\u6642\u9700\u8981\u5427\uFF1F\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
-  m_sharedMaterial: {fileID: 7110082202781152627, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
+  m_sharedMaterial: {fileID: -1617542280229718651, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1319,8 +1319,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u6211\u9700\u8981\u4F7F\u7528\u9019\u672C\u66F8\u591A\u4E45\u5462\uFF1F\n\u9019\u9580\u8AB2\u53EA\u6709\u4E00\u5B78\u671F\u5462...\n\u61C9\u8A72\u53EA\u8981\u56DB\u5230\u4E94\u500B\u6708\u5C31\u884C\u4E86\u5427\uFF1F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
-  m_sharedMaterial: {fileID: 7110082202781152627, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
+  m_sharedMaterial: {fileID: -1617542280229718651, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1938,8 +1938,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u5B8C\u86CB...\u5DF2\u7D93\u5FEB\u6C92\u9322\u4E86...\n\u6263\u6389\u9910\u8CBB\u8DDF\u65E5\u5E38\u958B\u92B7\n\u61C9\u8A72\u4E5F\u53EA\u5269\u4E0B\u4E94\u767E\u584A\u5DE6\u53F3\u80FD\u7528\u4E86...\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
-  m_sharedMaterial: {fileID: 7110082202781152627, guid: 97ee4e160b184444485fd01884d2075a, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
+  m_sharedMaterial: {fileID: -1617542280229718651, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2520,6 +2520,10 @@ PrefabInstance:
     - target: {fileID: 7233933533880421138, guid: 07f47ba4cfd99e24792be437a081579c, type: 3}
       propertyPath: m_Name
       value: TransitionCanvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7233933533880421138, guid: 07f47ba4cfd99e24792be437a081579c, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

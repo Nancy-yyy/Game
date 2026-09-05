@@ -114,13 +114,15 @@ public class EndingManager : MonoBehaviour
         bool answer1Correct =
             answer1.Contains("閒置") ||
             answer1.Contains("社團資產") ||
-            answer1.Contains("攝影機");
+            answer1.Contains("攝影機") ||
+            answer1.Contains("相機");
 
         bool answer2Correct =
-            answer2.Contains("暫時使用") ||
-            answer2.Contains("短期使用") ||
-            answer2.Contains("短暫使用") ||
-            answer2.Contains("兩天使用");
+            answer2.Contains("暫時") ||
+            answer2.Contains("短期") ||
+            answer2.Contains("短暫") ||
+            answer2.Contains("兩天") ||
+            answer2.Contains("使用權");
 
         bool answer3Correct =
             answer3.Contains("平台") ||
@@ -181,7 +183,7 @@ public class EndingManager : MonoBehaviour
 
         if (!answer2Correct)
         {
-            wrongConcepts.Add("使用權類型");
+            wrongConcepts.Add("權利類型");
         }
 
         if (!answer3Correct)
@@ -211,7 +213,7 @@ public class EndingManager : MonoBehaviour
 
         if (wrongUsageRight)
         {
-            wrongConcepts.Add("使用權");
+            wrongConcepts.Add("權利類型");
         }
 
         if (wrongMatchingMethod)
@@ -243,7 +245,7 @@ public class EndingManager : MonoBehaviour
         if (wrongUsageRight)
         {
             hints.Add(
-                "【使用權】借用兩天後需歸還攝影機，所以學生取得的是攝影機本身，還是特定期間內使用的權利？"
+                "【權利類型】借用兩天後需歸還攝影機，所以學生取得的是攝影機本身，還是特定期間內使用的權利？"
             );
         }
 
