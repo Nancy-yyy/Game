@@ -190,7 +190,15 @@ public static class GameData
     // =========================================================
     // 區塊 4：Case 3
     // =========================================================
+        /// <summary>
+    /// 條件抽屜媒合篩選點錯次數
+    /// </summary>
+    public static int Case3_FilterErrors = 0;
 
+    /// <summary>
+    /// 方案 B 信任問題與方案 C 守則小遊戲錯誤次數
+    /// </summary>
+    public static int Case3_MiniGameErrors = 0;
     /// <summary>
     /// Case 3 題目總錯誤次數
     /// </summary>
@@ -281,7 +289,7 @@ public static class GameData
     public static void InitializeExperiment()
     {
         ResetExperimentResults();
-
+       
         ExperimentStartTime =
             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -337,7 +345,8 @@ public static class GameData
         // -------------------------
         // Case 3
         // -------------------------
-
+        Case3_FilterErrors = 0;      // 🌟 加在這裡
+        Case3_MiniGameErrors = 0;    // 🌟 加在這裡
         Case3_QuizErrors = 0;
         Case3_Decision = "";
         Case3_PlayTime = 0f;
@@ -565,6 +574,8 @@ public static class GameData
                 "Case3錯誤數," +
                 "Case3決策," +
                 "Case3耗時," +
+                "Case3條件篩選錯誤," +
+                "Case3小遊戲錯誤," +
 
                 // Ending
                 "Ending概念遷移錯誤," +
@@ -643,7 +654,8 @@ public static class GameData
             $"{Case3_QuizErrors}," +
             $"{safeCase3Decision}," +
             $"{Case3_PlayTime:F1}," +
-
+            $"{Case3_FilterErrors}," +
+            $"{Case3_MiniGameErrors}," +
             // Ending
             $"{Ending_ConceptTransferErrors}," +
             $"{Ending_IdleAssetErrors}," +

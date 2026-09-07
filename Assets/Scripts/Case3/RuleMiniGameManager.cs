@@ -123,6 +123,9 @@ public class RuleMiniGameManager : MonoBehaviour
         }
         else
         {
+            // 🌟 累加小遊戲錯誤次數
+            GameData.Case3_MiniGameErrors++;
+
             if (wrongPromptBackdrop != null)
             {
                 wrongPromptBackdrop.transform.SetAsLastSibling();

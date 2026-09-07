@@ -65,5 +65,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ending/Ending.unity
     guid: 46eced93bc67a1046a98840710e471b6
+  - enabled: 1
+    path: Assets/Scenes/Case3/Case3_VideoScene.unity
+    guid: 5167dfa382fa4a640a81ba65a13cbd2f
+  - enabled: 1
+    path: Assets/Scenes/Case3/Ending_VideoScene.unity
+    guid: f3c61def6802ac84d83355daca96fca1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

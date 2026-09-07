@@ -264,6 +264,7 @@ public class Case2_StallManager : MonoBehaviour
             // ⭐ Case 2 圓滿完結！可在此載入大地圖或結算畫面
             Debug.Log("🎉 Case 2 劇情全數完成！");
             // LoadTargetScene("MapScene"); // 若有後續場景可填寫於此
+            LoadTargetScene("Case3_VideoScene");//小節放在這的
         }
     }
 

@@ -139,8 +139,11 @@ public class TrustMiniGameManager : MonoBehaviour
             // 答對 ➔ 進入解鎖成功
             OnGameComplete();
         }
-        else
+       else
         {
+            // 🌟 累加小遊戲錯誤次數
+            GameData.Case3_MiniGameErrors++;
+
             // 答錯 ➔ 跳出錯誤提示框，不彈回卡片，讓玩家點擊空白處後直接在畫面上手動調整
             if (wrongPromptBackdrop != null)
             {

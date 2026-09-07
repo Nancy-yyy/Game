@@ -3,10 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Video;
 
 public class PeopleSelectionManager : MonoBehaviour
 {
     public static PeopleSelectionManager Instance;
+
+    [Header("=== 三空間完成任務進度板 ===")]
+    [SerializeField] private GameObject case3SummaryPanel; // 拖入任務進度板物件
+
+    // 提供給進度板下方【平台媒合任務完成！】木牌 Button 的 OnClick 事件
+    public void OnClickSummaryPanelConfirm()
+    {
+        if (case3SummaryPanel != null)
+        {
+            case3SummaryPanel.SetActive(false); // 關閉進度板
+        }
+
+        // 開始播放縮時影片
+        StartCoroutine(PlayTimelapseRoutine());
+    }
+    [Header("任務進度動態打勾")]
+    [SerializeField] private Image summaryTaskImage; // 拖入 Case3SummaryPanel 底下的 Image
+    [SerializeField] private Sprite twoChecksSprite;   // 拖入 2 個勾的圖片
+    [SerializeField] private Sprite threeChecksSprite; // 拖入 3 個勾的圖片
+    
+    [Header("=== 結尾任務四完成面板 ===")]
+    [SerializeField] private GameObject finalSummaryPanel;
+    [SerializeField] private Image finalTaskImage;       // 拖入 FinalSummaryPanel 底下的 Image/PanelBackground
+    [SerializeField] private Sprite mission3Sprite;       // 拖入 3 個勾的圖片 (all_mission3)
+    [SerializeField] private Sprite mission4Sprite;       // 拖入 4 個勾的圖片 (all_mission4)
 
     [Header("=== 介面主容器 ===")]
     public GameObject frameBG;
@@ -18,6 +44,7 @@ public class PeopleSelectionManager : MonoBehaviour
     [Header("=== 縮時演練畫面模組 ===")]
     public GameObject timelapsePanel;
     public CanvasGroup timelapseCanvasGroup;
+    public VideoPlayer timelapseVideoPlayer;
 
     [Header("=== 卡片輪播模組 ===")]
     public Image cardDisplayImage;
@@ -31,9 +58,10 @@ public class PeopleSelectionManager : MonoBehaviour
     public Button screenClickBlocker;
     public GameObject systemSignPanel;
     public TextMeshProUGUI systemSignText;
-    
+
     public GameObject playerDialogBox;
     public TextMeshProUGUI playerDialogText;
+    public TextMeshProUGUI playerNameText; 
     public Image playerAvatarImage;
 
     [Header("=== 角色立繪 Sprite 清單 ===")]
@@ -50,6 +78,12 @@ public class PeopleSelectionManager : MonoBehaviour
     public GameObject wrongHintBackdrop;
     public Button wrongHintCloseButton;
     public Button finishButton;
+
+    [Header("=== 系統深度解析面板 (各空間通關後觸發) ===")]
+    public GameObject systemExpPanel;              
+    public TextMeshProUGUI txtSystemExp;           
+    public Button systemExpClickBlocker;           
+    public Button btnSystemExpConfirm;             
 
     [Header("=== 1. 使用人數模組 ===")]
     public GameObject peopleSelectionPanel;
@@ -121,6 +155,10 @@ public class PeopleSelectionManager : MonoBehaviour
     private int storyStep = 0;
     private bool isStoryActive = false;
 
+    // 系統解析專用變數
+    private string[] currentSystemExpLines;
+    private int currentSysExpIndex = 0;
+
     private enum StoryMode 
     { 
         SchemeA, 
@@ -149,6 +187,54 @@ public class PeopleSelectionManager : MonoBehaviour
     private List<StoryNode> storyList_Timelapse = new List<StoryNode>();
     private List<StoryNode> storyList_FinalSummary = new List<StoryNode>();
 
+    // 在十題問答/結尾對話結束時呼叫此協程
+public void TriggerFinalTaskSummary()
+{
+    StartCoroutine(ShowFinalSummaryRoutine());
+}
+
+private IEnumerator ShowFinalSummaryRoutine()
+{
+    // 1. 先顯示 3 個勾狀態並開啟面板
+    if (finalTaskImage != null && mission3Sprite != null)
+    {
+        finalTaskImage.sprite = mission3Sprite;
+    }
+    if (finalSummaryPanel != null)
+    {
+        finalSummaryPanel.SetActive(true);
+    }
+
+    // 2. 停留 0.6 秒讓玩家看到三勾
+    yield return new WaitForSeconds(0.6f);
+
+    // 3. 瞬間打上第 4 個勾並播放通關音效
+    if (finalTaskImage != null && mission4Sprite != null)
+    {
+        finalTaskImage.sprite = mission4Sprite;
+    }
+
+    if (AudioManager.Instance != null)
+    {
+        AudioManager.Instance.PlayCorrect();
+    }
+}
+
+// 綁定給 FinalSummaryPanel 下方木牌按鈕的 OnClick 事件
+    public void OnClickFinalSummaryConfirm()
+    {
+        // 🌟 結算 Case 3 總耗時
+        GameData.StopCase3Timer();
+
+        if (finalSummaryPanel != null)
+        {
+            finalSummaryPanel.SetActive(false);
+        }
+
+        // 前往結尾影片場景
+        UnityEngine.SceneManagement.SceneManager.LoadScene("Ending_VideoScene");
+    }
+
     void Awake()
     {
         Instance = this;
@@ -156,7 +242,32 @@ public class PeopleSelectionManager : MonoBehaviour
 
     void Start()
     {
+        GameData.StartCase3Timer();// 🌟 啟動 Case 3 計時
         CloseAllPanels();
+
+        // 任務進度板初始化（預設隱藏）
+        if (case3SummaryPanel != null) case3SummaryPanel.SetActive(false);
+
+        // 系統深度解析面板初始化
+        if (systemExpPanel != null) systemExpPanel.SetActive(false);
+
+        if (systemExpClickBlocker != null)
+        {
+            systemExpClickBlocker.onClick.RemoveAllListeners();
+            systemExpClickBlocker.onClick.AddListener(OnSystemExpPanelClicked);
+        }
+
+        if (btnSystemExpConfirm != null)
+        {
+            btnSystemExpConfirm.onClick.RemoveAllListeners();
+            btnSystemExpConfirm.onClick.AddListener(OnSystemExpConfirmClicked);
+            btnSystemExpConfirm.gameObject.SetActive(false); 
+        }
+
+        if (playerNameText != null)
+        {
+            playerNameText.text = !string.IsNullOrEmpty(GameData.PlayerName) ? GameData.PlayerName : "玩家";
+        }
         if (wrongHintBackdrop != null) wrongHintBackdrop.SetActive(false);
         if (searchResultPanel != null) searchResultPanel.SetActive(false);
         if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
@@ -230,8 +341,8 @@ public class PeopleSelectionManager : MonoBehaviour
         storyList_SchemeA.Add(new StoryNode(SpeakerType.Player, "共享工作室離學校走路只要 5 分鐘，環境安靜、設備又齊全，就選這間吧！"));
         storyList_SchemeA.Add(new StoryNode(SpeakerType.System, "【每小時 300 元，預約 3 小時總價 900 元，超出團隊 600 元預算！】"));
         storyList_SchemeA.Add(new StoryNode(SpeakerType.Bird, "嗶嗶！主人冷靜啊！你們口袋裡湊死湊活也只有 600 塊，預算爆掉了啦！"));
-        storyList_SchemeA.Add(new StoryNode(SpeakerType.Player, "可惡……設備最好的是這間欸！難道就這樣放棄嗎？等等！如果我們不租 3 小時，改租 2 小時（22:00 至 00:00），費用不就剛好是 600 塊了嗎？！"));
-        storyList_SchemeA.Add(new StoryNode(SpeakerType.Bird, "紙張吧?這樣你們討論得完嗎？必須重新分配這 2 小時的工作流程喔！"));
+        storyList_SchemeA.Add(new StoryNode(SpeakerType.Player, "可惡……設備最好的是這間欸！難道就這樣放棄嗎？等等!如果我們不租 3 小時，改租 2 小時（22:00 至 00:00），費用不就剛好是 600 塊了嗎？！"));
+        storyList_SchemeA.Add(new StoryNode(SpeakerType.Bird, "這樣你們討論得完嗎？必須重新分配這 2 小時的工作流程喔！"));
         storyList_SchemeA.Add(new StoryNode(SpeakerType.Player, "可以拉！我們那麼強！這樣兩小時綽綽有餘！"));
         storyList_SchemeA.Add(new StoryNode(SpeakerType.Bird, "這間最方便，但方便也是有代價的。我們得在兩小時內把事情全部做完！大家皮皮要繃緊囉！"));
 
@@ -240,26 +351,28 @@ public class PeopleSelectionManager : MonoBehaviour
         storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.Player, "補習班週末晚上沒有課，教室空著也是空著，3 小時 480 元完全在預算內！"));
         storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.System, "【補習班老闆擔心設備損壞找不到人負責，也不認識我們，他有點疑慮】"));
         storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.Player, "額……老闆發起疑慮連珠砲了，怎麼辦？"));
-        storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.Bird, "老闆不是完全不願意，他只是還不知道風險要由誰負責。平台上有一些保障功能，我們先看看能不能幫老闆把疑慮解開！"));
+        storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.Bird, "老闆聽起來不像是不願意欸，要不主人你們再想想辦法！"));
         storyList_SchemeB_Pre.Add(new StoryNode(SpeakerType.System, "【請幫助解決老闆疑慮，將正確解決方案拖移至對應方框】"));
 
         storyList_SchemeB_Post.Clear();
         storyList_SchemeB_Post.Add(new StoryNode(SpeakerType.Player, "太讚了！原來不是找到一間空教室就能直接進去使用。還要先讓雙方知道交易規則和責任怎麼處理。"));
-        storyList_SchemeB_Post.Add(new StoryNode(SpeakerType.Bird, "沒錯！平台不是只負責把地址丟給你，它還要讓原本不敢交易的雙方願意完成交易！"));
+        storyList_SchemeB_Post.Add(new StoryNode(SpeakerType.System, "沒錯！平台不是只負責把地址丟給你，它還要讓原本不敢交易的雙方願意完成交易！"));
 
         // 方案 C（社區活動中心）
         storyList_SchemeC_Pre.Clear();
         storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Player, "選社區活動中心！3 小時只要 300 塊，便宜到爆，預算省下一半！"));
         storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.System, "【活動中心管理員表示：空間今晚沒有活動，可以提供使用。但現場無工作人員，離開前須恢復桌椅並關閉電源。】"));
         storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Player, "沒有管理員看著耶！那我們是不是進去隨便用、用完拍拍屁股走人也沒人知道？"));
-        storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Bird, "嗶嗶！大錯特錯！無人管理不等於無政府狀態！共享空間能便宜開放，靠的是使用者共同遵守『使用與歸還規則』。"));
+        storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Bird, "主人主人....你不覺得這樣太不像法律世代了嗎...?"));
+        storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.System, "嗶嗶！大錯特錯！無人管理不等於無政府狀態！共享空間能便宜開放，靠的是使用者共同遵守『使用與歸還規則』。"));
         storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Player, "也是……如果每個人都把這裡弄得像戰場一樣亂，下次管理員就不敢再借給學生了。"));
-        storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.Bird, "沒錯！唯有建立明確的自律規範，共享資源才能永續運作！快來制定今晚的使用守則，向管理員換取電子門禁卡吧！"));
+        storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.System, "沒錯！唯有建立明確的自律規範，共享資源才能永續運作！快來制定今晚的使用守則，向管理員換取電子門禁卡吧！"));
         storyList_SchemeC_Pre.Add(new StoryNode(SpeakerType.System, "【請檢視使用規範，將4項正確守則拖入規範清單中】"));
 
         storyList_SchemeC_Post.Clear();
         storyList_SchemeC_Post.Add(new StoryNode(SpeakerType.Player, "太好了！收到管理員發來的電子門禁密碼了！原來共享經濟要長久，除了便宜和方便，更需要『自律和歸還責任』。"));
-        storyList_SchemeC_Post.Add(new StoryNode(SpeakerType.Bird, "叮咚！答對了！共享不是免費的隨便，而是建立在大家共同維護資產的默契上！"));
+        storyList_SchemeC_Post.Add(new StoryNode(SpeakerType.Bird, "哇哇主人你感覺長腦袋了耶！真不愧是南禾大學高材生"));
+        storyList_SchemeC_Post.Add(new StoryNode(SpeakerType.System, "叮咚！答對了！共享不是免費的隨便，而是建立在大家共同維護資產的默契上！"));
 
         // 縮時後的組員討論演練對話
         storyList_Timelapse.Clear();
@@ -273,8 +386,8 @@ public class PeopleSelectionManager : MonoBehaviour
         // 三方關係圖通關後的結尾總結對話
         storyList_FinalSummary.Clear();
         storyList_FinalSummary.Add(new StoryNode(SpeakerType.Player, "空間提供者始終保留『所有權』，我們只是拿到限定時間的『使用權』，而平台則是透過規則把我們兩邊連結起來！"));
-        storyList_FinalSummary.Add(new StoryNode(SpeakerType.Bird, "答對了！平台可不是只做一個網站而已喔！"));
-        storyList_FinalSummary.Add(new StoryNode(SpeakerType.Bird, "平台的驗證、押金和規則可以降低交易風險，但平台如果規則設計不好，也可能讓提供者或使用者承擔更多成本。"));
+        storyList_FinalSummary.Add(new StoryNode(SpeakerType.Bird, "這樣一說...平台可不是只做一個網站而已喔！"));
+        storyList_FinalSummary.Add(new StoryNode(SpeakerType.System, "沒錯沒錯窩~平台的驗證、押金和規則可以降低交易風險，但平台如果規則設計不好，也可能讓提供者或使用者承擔更多成本。"));
     }
 
     private void OpenPanel(GameObject targetPanel)
@@ -315,7 +428,9 @@ public class PeopleSelectionManager : MonoBehaviour
         }
         else
         {
-            // 🌟 選錯條件時播放答錯音效
+            // 🌟 記錄條件篩選錯誤次數
+            GameData.Case3_FilterErrors++;
+            
             if (AudioManager.Instance != null) AudioManager.Instance.PlayWrong();
 
             if (wrongHintBackdrop != null)
@@ -392,6 +507,29 @@ public class PeopleSelectionManager : MonoBehaviour
             }
         }
     }
+    private IEnumerator ShowSummaryWithAnimationRoutine()
+{
+    // 1. 先換成 2 個勾的狀態並打開面板
+    if (summaryTaskImage != null && twoChecksSprite != null)
+    {
+        summaryTaskImage.sprite = twoChecksSprite;
+    }
+    case3SummaryPanel.SetActive(true);
+
+    // 2. 停留 0.6 秒讓玩家看到原本只有兩勾
+    yield return new WaitForSeconds(0.6f);
+
+    // 3. 瞬間換成 3 個勾，並播放通關音效！
+    if (summaryTaskImage != null && threeChecksSprite != null)
+    {
+        summaryTaskImage.sprite = threeChecksSprite;
+    }
+
+    if (AudioManager.Instance != null)
+    {
+        AudioManager.Instance.PlayCorrect(); // 播放蓋章/通關叮咚聲
+    }
+}
 
     private void ShowPrevCard()
     {
@@ -419,23 +557,46 @@ public class PeopleSelectionManager : MonoBehaviour
 
     private void OnBookingSelected()
     {
-        if (currentCardIndex == 0)
+        switch (currentCardIndex)
         {
-            currentStoryMode = StoryMode.SchemeA;
-            StartCoroutine(TransitionToStoryRoutine());
+            case 0:
+                currentStoryMode = StoryMode.SchemeA;
+                GameData.Case3_Decision = "方案A_共享工作室"; // 🌟 記錄決策
+                break;
+            case 1:
+                currentStoryMode = StoryMode.SchemeC_PreGame; 
+                GameData.Case3_Decision = "方案C_社區活動中心"; // 🌟 記錄決策
+                break;
+            case 2:
+                currentStoryMode = StoryMode.SchemeB_PreGame; 
+                GameData.Case3_Decision = "方案B_補習班教室";   // 🌟 記錄決策
+                break;
+            default:
+                currentStoryMode = StoryMode.SchemeA;
+                GameData.Case3_Decision = "方案A_共享工作室";
+                break;
         }
-        else if (currentCardIndex == 1)
+
+        if (GlobalFader.Instance != null)
         {
-            currentStoryMode = StoryMode.SchemeC_PreGame;
-            StartCoroutine(TransitionToStoryRoutine());
+            GlobalFader.Instance.FadeTransition(() =>
+            {
+                if (searchResultPanel != null) searchResultPanel.SetActive(false);
+                if (frameBG != null) frameBG.SetActive(false);
+                if (conditionDrawer != null) conditionDrawer.SetActive(false);
+
+                StartCoroutine(TransitionToStoryRoutine());
+            });
         }
-        else if (currentCardIndex == 2)
+        else
         {
-            currentStoryMode = StoryMode.SchemeB_PreGame;
+            if (searchResultPanel != null) searchResultPanel.SetActive(false);
+            if (frameBG != null) frameBG.SetActive(false);
+            if (conditionDrawer != null) conditionDrawer.SetActive(false);
+
             StartCoroutine(TransitionToStoryRoutine());
         }
     }
-
     public void StartPostGameStory()
     {
         currentStoryMode = StoryMode.SchemeB_PostGame;
@@ -554,7 +715,6 @@ public class PeopleSelectionManager : MonoBehaviour
                     systemSignPanel.SetActive(true);
                     if (systemSignText != null) systemSignText.text = node.text;
                 }
-                // 🌟 系統告示顯示音效
                 if (AudioManager.Instance != null) AudioManager.Instance.PlaySystemPrompt();
                 break;
 
@@ -581,7 +741,6 @@ public class PeopleSelectionManager : MonoBehaviour
     {
         if (!isStoryActive) return;
 
-        // 🌟 點擊畫面推進對話音效
         if (AudioManager.Instance != null) AudioManager.Instance.PlayScreenClick();
 
         storyStep++;
@@ -617,31 +776,156 @@ public class PeopleSelectionManager : MonoBehaviour
             if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
             if (TripartiteQAManager.Instance != null)
             {
-                TripartiteQAManager.Instance.StartQAGame();
+                TripartiteQAManager.Instance.StartQAGameWithTransition();
             }
         }
         else if (currentStoryMode == StoryMode.FinalSummaryStory)
         {
-            Debug.Log("【Case 3 結尾】共享經濟空間案例全部通關！");
+            StartSystemExplanation(currentStoryMode);
         }
         else
         {
-            if (currentStoryMode == StoryMode.SchemeA) completedSchemeA = true;
-            else if (currentStoryMode == StoryMode.SchemeB_PostGame) completedSchemeB = true;
-            else if (currentStoryMode == StoryMode.SchemeC_PostGame) completedSchemeC = true;
+            StartSystemExplanation(currentStoryMode);
+        }
+    }
 
-            if (completedSchemeA && completedSchemeB && completedSchemeC)
+    private void StartSystemExplanation(StoryMode mode)
+    {
+        currentSysExpIndex = 0;
+        currentSystemExpLines = GetSystemExpLinesForScheme(mode);
+
+        if (systemExpPanel != null) systemExpPanel.SetActive(true);
+        UpdateSystemExpText();
+    }
+
+    private void UpdateSystemExpText()
+    {
+        if (txtSystemExp != null && currentSystemExpLines != null && currentSysExpIndex < currentSystemExpLines.Length)
+        {
+            txtSystemExp.text = currentSystemExpLines[currentSysExpIndex];
+
+            if (currentSysExpIndex == currentSystemExpLines.Length - 1)
             {
-                StartCoroutine(PlayTimelapseRoutine());
+                if (systemExpClickBlocker != null) systemExpClickBlocker.gameObject.SetActive(false);
+                if (btnSystemExpConfirm != null) btnSystemExpConfirm.gameObject.SetActive(true);
             }
             else
             {
-                if (backStepButton != null) backStepButton.gameObject.SetActive(true);
+                if (systemExpClickBlocker != null) systemExpClickBlocker.gameObject.SetActive(true);
+                if (btnSystemExpConfirm != null) btnSystemExpConfirm.gameObject.SetActive(false);
             }
         }
     }
 
-    private IEnumerator PlayTimelapseRoutine()
+    private void OnSystemExpPanelClicked()
+    {
+        if (currentSystemExpLines == null) return;
+
+        currentSysExpIndex++;
+        if (currentSysExpIndex < currentSystemExpLines.Length)
+        {
+            UpdateSystemExpText();
+        }
+    }
+
+  private void OnSystemExpConfirmClicked()
+    {
+        if (systemExpPanel != null) systemExpPanel.SetActive(false);
+
+        // 🌟 修正這裡：十題問答後的總結解析看完，啟動任務四動態進度板
+        if (currentStoryMode == StoryMode.FinalSummaryStory)
+        {
+            Debug.Log("【Case 3 結尾】總結解析看完，啟動任務四進度板動態打勾！");
+            if (finalSummaryPanel != null)
+            {
+                StartCoroutine(ShowFinalSummaryRoutine());
+            }
+            else
+            {
+                // 若未指定面板則直接進入影片
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Ending_VideoScene");
+            }
+            return;
+        }
+
+        // 記錄當前完成的是哪個空間
+        if (currentStoryMode == StoryMode.SchemeA) completedSchemeA = true;
+        else if (currentStoryMode == StoryMode.SchemeB_PostGame) completedSchemeB = true;     
+        else if (currentStoryMode == StoryMode.SchemeC_PostGame) completedSchemeC = true;     
+
+        // 檢查三個空間是否都通關了
+        if (completedSchemeA && completedSchemeB && completedSchemeC)
+        {
+            Debug.Log("【Case 3】三大空間全部通關，啟動任務進度動態打勾！");
+            
+            if (case3SummaryPanel != null)
+            {
+                StartCoroutine(ShowSummaryWithAnimationRoutine());
+            }
+            else
+            {
+                StartCoroutine(PlayTimelapseRoutine());
+            }
+        }
+        else
+        {
+            // 還沒全部通關，顯示返回選單按鈕，讓玩家挑選下一個空間
+            if (backStepButton != null) backStepButton.gameObject.SetActive(true);
+        }
+    }
+
+    private string[] GetSystemExpLinesForScheme(StoryMode mode)
+    {
+        if (mode == StoryMode.SchemeA)
+        {
+            return new string[]
+            {
+                "【系統小百科 (1/4)】：什麼是共享？就是東西空著也是空著，拿出來給需要的人用，大家一起分攤成本，這就是最簡單的共享經濟！",
+                "【系統小百科 (2/4)】：不過，時間跟金錢總是需要取捨的。像我們這次為了省錢，把 3 小時縮短成 2 小時，雖然預算過關了，但討論的時間也變得很緊湊。",
+                "【系統小百科 (3/4)】：設備好、地點方便的東西通常比較貴，這提醒我們在現實生活中，預算有限時一定要算清楚「花這個錢到底划不划算」。",
+                "【系統小百科 (4/4)】：所以，抓對時間、有效率地完成目標，才是用最少預算發揮最大效益的祕訣！"
+            };
+        }
+        else if (mode == StoryMode.SchemeB_PostGame || mode == StoryMode.SchemeB_PreGame)
+        {
+            return new string[]
+            {
+                "【系統小百科 (1/4)】：當你要跟一個完全不認識的人借場地時，雙方心裡一定都會毛毛的，擔心對方把環境弄壞或是人跑掉不付錢。",
+                "【系統小百科 (2/4)】：這時候，『平台』的角色就很重要了，也就是我們的【容身之地】平台！透過實名認證、押金和賠償規定，就像是在雙方之間建立了一層安全網。",
+                "【系統小百科 (3/4)】：有了這些制度，本來應該由房東一個人承擔的風險，就可以透過平台規則大家一起分擔。",
+                "【系統小百科 (4/4)】：所以，一個好的共享平台不只是幫忙牽線找地方，更重要的是建立『信任感』，讓大家敢安心交易！"
+            };
+        }
+        else if (mode == StoryMode.SchemeC_PostGame || mode == StoryMode.SchemeC_PreGame)
+        {
+            return new string[]
+            {
+                "【系統小百科 (1/4)】：如果是一個『沒有管理員看著』的公共空間，大家會不會隨便亂搞？如果每個人都這樣想，最後這個地方一定會被弄到不能用。",
+                "【系統小百科 (2/4)】：這就是為什麼『互相尊重跟自律』超級重要！大家一起使用的東西，如果都不愛惜，最後倒楣的還是自己。",
+                "【系統小百科 (3/4)】：所以，活動中心才會要求大家遵守規定、不亂吃東西、走之前要把桌椅恢復原狀、隨手關燈。",
+                "【系統小百科 (4/4)】：只要每個人都負起責任、遵守約定，便宜又方便的共享空間才能一直長久發展下去！"
+            };
+        }
+        else if (mode == StoryMode.FinalSummaryStory)
+        {
+            return new string[]
+            {
+                "【共享經濟大總結 (1/4)】：回顧這三個關卡，我們發現『所有權』跟『使用權』是可以分開的！房東保有房子，而我們只買下需要的時段來使用。",
+                "【共享經濟大總結 (2/4)】：不管是哪一種空間，『平台』在中間都扮演了超級關鍵的角色。它不只是個貼廣告的網站，更是幫大家過濾風險、建立信任的橋樑。",
+                "【共享經濟大總結 (3/4)】：對提供者來說，平台保障了他們的資產安全與準時收錢；對使用者來說，平台提供了方便比較、價格透明的選擇。",
+                "【共享經濟大總結 (4/4)】：所以，一個成功的共享經濟模式，就是靠著『空間主人的分享、使用者的自律、以及平臺的規則』三方互助，才能讓好資源一直循環下去！"
+            };
+        }
+        else
+        {
+            return new string[]
+            {
+                "【系統深度解析 (1/1)】：恭喜完成此空間的共享經濟體驗！請點擊確認返回選單。"
+            };
+        }
+    }
+
+   private IEnumerator PlayTimelapseRoutine()
     {
         if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
 
@@ -649,7 +933,6 @@ public class PeopleSelectionManager : MonoBehaviour
         {
             timelapsePanel.SetActive(true);
 
-            // 🌟 縮時畫面播放鬧鐘音效！
             if (AudioManager.Instance != null) AudioManager.Instance.PlayAlarm();
 
             if (timelapseCanvasGroup != null)
@@ -665,7 +948,16 @@ public class PeopleSelectionManager : MonoBehaviour
                 timelapseCanvasGroup.alpha = 1f;
             }
 
-            yield return new WaitForSeconds(2.0f);
+            if (timelapseVideoPlayer != null)
+            {
+                timelapseVideoPlayer.Play();
+                yield return new WaitUntil(() => timelapseVideoPlayer.isPlaying);
+                yield return new WaitWhile(() => timelapseVideoPlayer.isPlaying);
+            }
+            else
+            {
+                yield return new WaitForSeconds(2.0f);
+            }
 
             if (timelapseCanvasGroup != null)
             {
@@ -676,7 +968,9 @@ public class PeopleSelectionManager : MonoBehaviour
                     timelapseCanvasGroup.alpha = Mathf.Lerp(1f, 0f, t / 0.3f);
                     yield return null;
                 }
+                timelapseCanvasGroup.alpha = 0f;
             }
+
             timelapsePanel.SetActive(false);
         }
         else
