@@ -63,7 +63,13 @@ public class PeopleSelectionManager : MonoBehaviour
     public TextMeshProUGUI playerDialogText;
     public TextMeshProUGUI playerNameText; 
     public Image playerAvatarImage;
-
+    
+    [Header("=== 組員對話框模組 ===")]
+    public GameObject memberDialogBox;          // 拖入 MemberDialogBox
+    public TextMeshProUGUI memberDialogText;     // 拖入 Txt_MemberContent
+    public TextMeshProUGUI memberNameText;       // 拖入 Txt_MemberName (選填)
+    public Image memberAvatarImage;              // 拖入 MemberAvatar (Image)
+    
     [Header("=== 角色立繪 Sprite 清單 ===")]
     public Sprite avatarPlayer;
     public Sprite avatarMemberA;
@@ -636,6 +642,14 @@ private IEnumerator ShowFinalSummaryRoutine()
 
         yield return new WaitForSeconds(0.2f);
 
+        // 🌟 關鍵修正：只要進入對話模式，一律強制將大背景設為教室底圖！
+        if (backgroundImage != null && classroomBackgroundSprite != null)
+        {
+            backgroundImage.gameObject.SetActive(true);
+            backgroundImage.sprite = classroomBackgroundSprite;
+            backgroundImage.color = Color.white; // 確保顏色沒有被透明度影響
+        }
+
         storyStep = 0;
         isStoryActive = true;
         if (classroomDialogGroup != null) classroomDialogGroup.SetActive(true);
@@ -663,7 +677,9 @@ private IEnumerator ShowFinalSummaryRoutine()
 
         StoryNode node = currentList[storyStep];
 
+        // 先將所有對話框關閉
         if (playerDialogBox != null) playerDialogBox.SetActive(false);
+        if (memberDialogBox != null) memberDialogBox.SetActive(false);
         if (systemSignPanel != null) systemSignPanel.SetActive(false);
         if (birdDialogBox != null) birdDialogBox.SetActive(false);
 
@@ -680,33 +696,15 @@ private IEnumerator ShowFinalSummaryRoutine()
                 break;
 
             case SpeakerType.MemberA:
-                if (playerDialogBox != null)
-                {
-                    playerDialogBox.SetActive(true);
-                    if (playerDialogText != null) playerDialogText.text = node.text;
-                    UpdateAvatar(avatarMemberA);
-                }
-                if (AudioManager.Instance != null) AudioManager.Instance.PlayDialogue();
+                ShowMemberDialogue("組員 A", node.text, avatarMemberA);
                 break;
 
             case SpeakerType.MemberB:
-                if (playerDialogBox != null)
-                {
-                    playerDialogBox.SetActive(true);
-                    if (playerDialogText != null) playerDialogText.text = node.text;
-                    UpdateAvatar(avatarMemberB);
-                }
-                if (AudioManager.Instance != null) AudioManager.Instance.PlayDialogue();
+                ShowMemberDialogue("組員 B", node.text, avatarMemberB);
                 break;
 
             case SpeakerType.MemberC:
-                if (playerDialogBox != null)
-                {
-                    playerDialogBox.SetActive(true);
-                    if (playerDialogText != null) playerDialogText.text = node.text;
-                    UpdateAvatar(avatarMemberC);
-                }
-                if (AudioManager.Instance != null) AudioManager.Instance.PlayDialogue();
+                ShowMemberDialogue("組員 C", node.text, avatarMemberC);
                 break;
 
             case SpeakerType.System:
@@ -729,6 +727,22 @@ private IEnumerator ShowFinalSummaryRoutine()
         }
     }
 
+    // 專門顯示組員對話的輔助函式
+    private void ShowMemberDialogue(string memberName, string content, Sprite avatar)
+    {
+        if (memberDialogBox != null)
+        {
+            memberDialogBox.SetActive(true);
+            if (memberDialogText != null) memberDialogText.text = content;
+            if (memberNameText != null) memberNameText.text = memberName;
+            if (memberAvatarImage != null && avatar != null)
+            {
+                memberAvatarImage.sprite = avatar;
+            }
+        }
+        if (AudioManager.Instance != null) AudioManager.Instance.PlayDialogue();
+    }
+
     private void UpdateAvatar(Sprite targetSprite)
     {
         if (playerAvatarImage != null && targetSprite != null)
@@ -749,8 +763,9 @@ private IEnumerator ShowFinalSummaryRoutine()
 
     private void EndStory()
     {
-        isStoryActive = false;
+       isStoryActive = false;
         if (playerDialogBox != null) playerDialogBox.SetActive(false);
+        if (memberDialogBox != null) memberDialogBox.SetActive(false); // 🌟 加上這行
         if (systemSignPanel != null) systemSignPanel.SetActive(false);
         if (birdDialogBox != null) birdDialogBox.SetActive(false);
         if (screenClickBlocker != null) screenClickBlocker.gameObject.SetActive(false);
@@ -982,19 +997,34 @@ private IEnumerator ShowFinalSummaryRoutine()
         StartCoroutine(TransitionToStoryRoutine());
     }
 
-    private void OnBackStepClicked()
-    {
+    public void OnBackStepClicked()
+    {// 1. 關閉重新選擇按鈕與教室對話群組
         if (backStepButton != null) backStepButton.gameObject.SetActive(false);
         if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
 
+        // 2. 換回預設輪播背景
+        if (backgroundImage != null && defaultBackgroundSprite != null)
+        {
+            backgroundImage.sprite = defaultBackgroundSprite;
+        }
+
+        // 3. 喚醒外框與三張卡片輪播面板
         if (frameBG != null) frameBG.SetActive(true);
         if (searchResultPanel != null) searchResultPanel.SetActive(true);
         if (frameCanvasGroup != null) frameCanvasGroup.alpha = 1f;
         if (searchResultCanvasGroup != null) searchResultCanvasGroup.alpha = 1f;
+
+        // 4. 刷新卡片顯示
+        UpdateCardDisplay();
     }
 
     public void CloseWrongHint()
     {
         if (wrongHintBackdrop != null) wrongHintBackdrop.SetActive(false);
     }
+   [Header("=== 背景圖替換設定 ===")]
+    public Image backgroundImage;          // 拉入 Canvas 下的 background 物件
+    public Sprite defaultBackgroundSprite; // 預設背景 (卡片輪播時的底圖)
+    public Sprite classroomBackgroundSprite; // 教室背景 (對話時顯示的教室圖)
+
 }
