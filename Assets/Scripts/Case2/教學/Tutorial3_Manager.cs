@@ -31,6 +31,11 @@ public class Tutorial3_Manager : MonoBehaviour
     public TextMeshProUGUI warningText;
     public Button warningCloseBtn;
 
+    [Header("【音效設定】")]
+    public AudioSource audioSource;
+    public AudioClip correctSFX;    
+    public AudioClip wrongSFX;      
+
     private int sysStep = 0;
     private bool isComicPhase = false;
     private bool isInitialized = false;
@@ -50,6 +55,14 @@ public class Tutorial3_Manager : MonoBehaviour
         if (scenarioQuizGroup != null) scenarioQuizGroup.SetActive(false);
         if (warningBoxPanel != null) warningBoxPanel.SetActive(false);
         if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.spatialBlend = 0f;
+        audioSource.playOnAwake = false;
     }
 
     void Start()
@@ -98,11 +111,9 @@ public class Tutorial3_Manager : MonoBehaviour
             scenarioOptC_Btn.interactable = true;
         }
 
-        // 啟動開場打亂協程
         StartCoroutine(InitialShuffleRoutine());
     }
 
-    // ⭐ 只要面板被啟用 (輪播切換到這頁) 就確保執行一次強制打亂
     private void OnEnable()
     {
         StartCoroutine(InitialShuffleRoutine());
@@ -110,7 +121,6 @@ public class Tutorial3_Manager : MonoBehaviour
 
     private IEnumerator InitialShuffleRoutine()
     {
-        // 等待一幀讓 RectTransform 錨點與坐標完全運算就緒
         yield return null;
         ShuffleCardsToAnchors();
     }
@@ -141,7 +151,7 @@ public class Tutorial3_Manager : MonoBehaviour
             if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
             
             if (comicDragDropGroup != null) comicDragDropGroup.SetActive(true);
-            ShuffleCardsToAnchors(); // 進入拖曳階段再次刷新打亂
+            ShuffleCardsToAnchors();
             return;
         }
 
@@ -157,7 +167,6 @@ public class Tutorial3_Manager : MonoBehaviour
         }
     }
 
-    // ⭐ 強制打亂且「絕不出現正解順序」的洗牌演算法
     public void ShuffleCardsToAnchors()
     {
         if (dragCards == null || cardAnchors == null || dragCards.Length == 0 || cardAnchors.Length == 0) return;
@@ -190,7 +199,6 @@ public class Tutorial3_Manager : MonoBehaviour
             }
         }
 
-        // ⭐ 關鍵修正：呼叫 SetNewAnchor，直接重設父物件與 AnchoredPosition
         for (int i = 0; i < dragCards.Length; i++)
         {
             if (dragCards[i] != null && i < randomizedAnchors.Count)
@@ -223,15 +231,32 @@ public class Tutorial3_Manager : MonoBehaviour
 
         if (isAllCorrect)
         {
+            PlaySFX(correctSFX);
             StartCoroutine(OnAllCardsPlacedCorrectly());
         }
         else
         {
+            PlaySFX(wrongSFX);
+
+            // ⭐ 累計四格漫畫排序錯誤次數
+            GameData.Case2_Tutorial3_Errors++;
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
                 warningBoxPanel.transform.SetAsLastSibling();
-                if (warningText != null) warningText.text = "順序好像不太對歐，再試一次吧！";
+
+                // ⭐【此為 Tutorial 3A 四格漫畫排序錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 3A 漫畫排序錯誤高資訊回饋內容】順序不太對喔！請注意：必須先存在『閒置資產』與『新需求出現』，才能進入『媒合取得使用權』，最後達成『資產再次被使用』。";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "順序好像不太對歐，再試一次吧！";
+                }
             }
         }
     }
@@ -249,7 +274,7 @@ public class Tutorial3_Manager : MonoBehaviour
             }
         }
 
-        ShuffleCardsToAnchors(); // 答錯後重新隨機洗牌
+        ShuffleCardsToAnchors();
     }
 
     private IEnumerator OnAllCardsPlacedCorrectly()
@@ -261,7 +286,18 @@ public class Tutorial3_Manager : MonoBehaviour
             systemBlockPanel.SetActive(true);
             systemBlockPanel.transform.SetAsLastSibling();
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
-            if (systemBlockText != null) systemBlockText.text = "看來你對共享經濟已經有初步了解囉！";
+
+            // ⭐【此為 Tutorial 3A 漫畫排序完成 - 高低資訊回饋內容】
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "【此為 Tutorial 3A 排序完成高資訊回饋內容】沒錯就是這樣！閒置資源透過媒合重新流動，讓不需要買斷的人也能在對的時間滿足需求。";
+            }
+            else
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "看來你對共享經濟已經有初步了解囉！";
+            }
         }
 
         yield return new WaitForSeconds(1.5f);
@@ -280,6 +316,8 @@ public class Tutorial3_Manager : MonoBehaviour
     {
         if (isCorrect)
         {
+            PlaySFX(correctSFX);
+
             if (scenarioOptA_Btn != null) scenarioOptA_Btn.interactable = false;
             if (scenarioOptB_Btn != null) scenarioOptB_Btn.interactable = false;
             if (scenarioOptC_Btn != null) scenarioOptC_Btn.interactable = false;
@@ -289,7 +327,18 @@ public class Tutorial3_Manager : MonoBehaviour
                 systemBlockPanel.SetActive(true);
                 systemBlockPanel.transform.SetAsLastSibling();
                 if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
-                if (systemBlockText != null) systemBlockText.text = "判斷正確！\n我們繼續往下看！";
+
+                // ⭐【此為 Tutorial 3B 情境選擇答對 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (systemBlockText != null)
+                        systemBlockText.text = "【此為 Tutorial 3B 情境答對高資訊回饋內容】沒錯！B 選項讓同一本已存在的實體書在不同時間被多位同學重複使用，最能將閒置容量發揮到極致。\n我們繼續往下看！";
+                }
+                else
+                {
+                    if (systemBlockText != null)
+                        systemBlockText.text = "判斷正確！\n點擊右邊的箭頭我們繼續往下看！";
+                }
             }
 
             if (TutorialCarouselManager.Instance != null)
@@ -299,12 +348,33 @@ public class Tutorial3_Manager : MonoBehaviour
         }
         else
         {
+            PlaySFX(wrongSFX);
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
                 warningBoxPanel.transform.SetAsLastSibling();
-                if (warningText != null) warningText.text = "再想想看吧";
+
+                // ⭐【此為 Tutorial 3B 情境選擇錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 3B 情境錯誤高資訊回饋內容】好像不太對呢...購買新書或長期放著沒有在提高資產利用率，請比較哪一個選項真正讓『既有閒置資源』被循環利用！";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "好像不太對呢...再想一想吧！";
+                }
             }
+        }
+    }
+
+    private void PlaySFX(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

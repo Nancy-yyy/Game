@@ -31,6 +31,11 @@ public class Tutorial2_Manager : MonoBehaviour
     public TextMeshProUGUI warningText;
     public Button warningCloseBtn;
 
+    [Header("【音效設定】")]
+    public AudioSource audioSource;
+    public AudioClip correctSFX;    
+    public AudioClip wrongSFX;      
+
     private int teachStep = 0;
     private int conclusionStep = 0;
     private bool isConclusionPhase = false;
@@ -58,6 +63,14 @@ public class Tutorial2_Manager : MonoBehaviour
         if (quizGroup != null) quizGroup.SetActive(false);
         if (warningBoxPanel != null) warningBoxPanel.SetActive(false);
         if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.spatialBlend = 0f;
+        audioSource.playOnAwake = false;
     }
 
     void Start()
@@ -72,8 +85,6 @@ public class Tutorial2_Manager : MonoBehaviour
 
         if (quizGroup != null) quizGroup.SetActive(false);
         if (warningBoxPanel != null) warningBoxPanel.SetActive(false);
-
-        
 
         if (systemBlockNextBtn != null)
         {
@@ -137,10 +148,9 @@ public class Tutorial2_Manager : MonoBehaviour
                 if (systemBlockText != null) systemBlockText.text = conclusionLines[1];
                 if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
                 
-                // ⭐ 正式解鎖右箭頭，點擊只會前進一頁 (前往教學 3)
                 if (TutorialCarouselManager.Instance != null)
                 {
-                    TutorialCarouselManager.Instance.UnlockNextPage(2); // 解鎖教學 3
+                    TutorialCarouselManager.Instance.UnlockNextPage(2);
                 }
             }
             return;
@@ -178,6 +188,8 @@ public class Tutorial2_Manager : MonoBehaviour
     {
         if (isCorrect)
         {
+            PlaySFX(correctSFX);
+
             if (optionA_Btn != null) optionA_Btn.interactable = false;
             if (optionB_Btn != null) optionB_Btn.interactable = false;
             if (optionC_Btn != null) optionC_Btn.interactable = false;
@@ -186,11 +198,24 @@ public class Tutorial2_Manager : MonoBehaviour
         }
         else
         {
+            PlaySFX(wrongSFX);
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
                 warningBoxPanel.transform.SetAsLastSibling();
-                if (warningText != null) warningText.text = "不太對歐...再想想看吧！";
+
+                // ⭐【此為 Tutorial 2 閒置資產選擇錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 2 選擇錯誤高資訊回饋內容】可以想想『目前沒有人使用』與『這項資產已經失去使用價值』是不是同一件事呢？它的內容依然完整且對其他人有用！";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "好像不太對呢...再想一想吧！";
+                }
             }
         }
     }
@@ -202,7 +227,18 @@ public class Tutorial2_Manager : MonoBehaviour
             systemBlockPanel.SetActive(true);
             systemBlockPanel.transform.SetAsLastSibling();
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
-            if (systemBlockText != null) systemBlockText.text = "沒錯呦！";
+
+            // ⭐【此為 Tutorial 2 答對 - 高低資訊回饋內容】
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null) 
+                    systemBlockText.text = "【此為 Tutorial 2 答對高資訊回饋內容】沒錯！即使原持有人暫時不需要，資產的剩餘使用價值依然存在，這就是形成『閒置資產』的重要基礎。";
+            }
+            else
+            {
+                if (systemBlockText != null) 
+                    systemBlockText.text = "沒錯呦！";
+            }
         }
 
         yield return new WaitForSeconds(1.2f);
@@ -214,6 +250,14 @@ public class Tutorial2_Manager : MonoBehaviour
         {
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
             if (systemBlockText != null) systemBlockText.text = conclusionLines[0];
+        }
+    }
+
+    private void PlaySFX(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

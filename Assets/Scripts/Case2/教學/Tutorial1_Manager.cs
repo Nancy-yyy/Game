@@ -14,29 +14,31 @@ public class Tutorial1_Manager : MonoBehaviour
     }
 
     [Header("【常駐標題】")]
-    public GameObject titleImage; // 拖入 TitleImg_OwnershipVsUsage
+    public GameObject titleImage;
 
     [Header("【第 1 幕：開場對話群組】")]
-    public GameObject introDialogueGroup; // 拖入 IntroDialogueGroup
+    public GameObject introDialogueGroup;
     public GameObject dialogue1_Group;    // 主角 1
+    public TMP_Text dialogue1_SpeakerText;// 主角姓名框 (若有)
     public GameObject dialogue2_Group;    // 鳥鳥 1
     public GameObject dialogue3_Group;    // 主角 2
-    public Button screenClickAreaBtn;     // 全螢幕透明按鈕
+    public TMP_Text dialogue3_SpeakerText;// 主角姓名框 (若有)
+    public Button screenClickAreaBtn;     
 
     [Header("【第 2 幕：概念卡片】")]
-    public RectTransform conceptCardsGroup; // 拖入 ConceptCardsGroup
+    public RectTransform conceptCardsGroup;
     public Button cardOwnershipBtn;        
     public Button cardUseRightBtn;         
     public HoverCardEffect hoverOwnership; 
     public HoverCardEffect hoverUseRight;  
 
     [Header("【第 3 幕 & 結尾：System Block 系統講解框】")]
-    public GameObject systemBlockPanel;    // 拖入 SystemBlockPanel
-    public TextMeshProUGUI systemBlockText;// 拖入 SystemBlockText
-    public Button systemBlockNextBtn;      // 拖入 SystemBlockNextBtn
+    public GameObject systemBlockPanel;    
+    public TextMeshProUGUI systemBlockText;
+    public Button systemBlockNextBtn;      
 
     [Header("【第 4 幕：例題問答】")]
-    public GameObject questionPanel;       // 拖入 QuestionPanel
+    public GameObject questionPanel;       
     public TextMeshProUGUI questionIndexText;   
     public TextMeshProUGUI questionContentText; 
     public QuestionData[] questions = new QuestionData[]
@@ -51,6 +53,11 @@ public class Tutorial1_Manager : MonoBehaviour
     public GameObject warningBoxPanel;     
     public TextMeshProUGUI warningText;    
     public Button warningCloseBtn;         
+
+    [Header("【音效設定】")]
+    public AudioSource audioSource;        
+    public AudioClip correctSFX;           
+    public AudioClip wrongSFX;             
 
     [Header("【第 5 幕：底部角色對話框】")]
     public GameObject bottomDialoguePanel; 
@@ -76,6 +83,17 @@ public class Tutorial1_Manager : MonoBehaviour
         "現在我們來看看不同的例子吧，點擊你認為正確的權利！"
     };
 
+    void Awake()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.spatialBlend = 0f;
+        audioSource.playOnAwake = false;
+    }
+
     void Start()
     {
         if (titleImage != null) titleImage.SetActive(true);
@@ -83,6 +101,11 @@ public class Tutorial1_Manager : MonoBehaviour
         if (dialogue1_Group != null) dialogue1_Group.SetActive(true);
         if (dialogue2_Group != null) dialogue2_Group.SetActive(false);
         if (dialogue3_Group != null) dialogue3_Group.SetActive(false);
+
+        // ⭐ 統一指派主角姓名
+        if (dialogue1_SpeakerText != null) dialogue1_SpeakerText.text = GameData.PlayerName;
+        if (dialogue3_SpeakerText != null) dialogue3_SpeakerText.text = GameData.PlayerName;
+        if (bottomSpeakerText != null) bottomSpeakerText.text = GameData.PlayerName;
 
         if (conceptCardsGroup != null) conceptCardsGroup.gameObject.SetActive(false);
         if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
@@ -228,6 +251,8 @@ public class Tutorial1_Manager : MonoBehaviour
 
         if (isCorrect)
         {
+            PlaySFX(correctSFX);
+
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.Length)
             {
@@ -240,10 +265,26 @@ public class Tutorial1_Manager : MonoBehaviour
         }
         else
         {
+            PlaySFX(wrongSFX);
+
+            // ⭐ 累計 Tutorial 1 答錯次數
+            GameData.Case2_Tutorial1_Errors++;
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
-                if (warningText != null) warningText.text = "好像不太對歐~再想想看吧！";
+
+                // ⭐【此為 Tutorial 1 所有權 vs 使用權判斷錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 1 問答錯誤高資訊回饋內容】可以想想你取得的是『資產本身的所有處分權』，還是『在特定期限或條件下使用它的資格』。";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "好像不太對歐~再想想看吧！";
+                }
             }
         }
     }
@@ -251,6 +292,14 @@ public class Tutorial1_Manager : MonoBehaviour
     public void OnCloseWarningBox()
     {
         if (warningBoxPanel != null) warningBoxPanel.SetActive(false);
+    }
+
+    private void PlaySFX(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     private void FinishAllQuestions()
@@ -264,7 +313,18 @@ public class Tutorial1_Manager : MonoBehaviour
             isEndingPraisePhase = true;
             systemBlockPanel.SetActive(true);
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
-            if (systemBlockText != null) systemBlockText.text = "看來你對所有權與使用權都很了解囉！";
+
+            // ⭐【此為 Tutorial 1 問答完成 - 高低資訊回饋內容】
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "【此為 Tutorial 1 完成高資訊回饋內容】太棒了！你已經能清楚辨別：擁有資產是取得處分的所有權，而租借與訂閱則是在約定期限內取得使用權。";
+            }
+            else
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "看來你對所有權與使用權都很了解囉！";
+            }
         }
     }
 
@@ -272,12 +332,13 @@ public class Tutorial1_Manager : MonoBehaviour
     {
         if (endingDialogueStep == 0)
         {
-            if (bottomSpeakerText != null) bottomSpeakerText.text = "主角";
+            // ⭐ 統一呼叫主角姓名
+            if (bottomSpeakerText != null) bottomSpeakerText.text = GameData.PlayerName;
             if (bottomContentText != null) bottomContentText.text = "所以買書是把書變成我的，而租書則是在一段時間內取得它的使用權嗎？";
         }
         else if (endingDialogueStep == 1)
         {
-            if (bottomSpeakerText != null) bottomSpeakerText.text = "鳥鳥";
+            if (bottomSpeakerText != null) bottomSpeakerText.text = "GameData.PlayerName";
             if (bottomContentText != null) bottomContentText.text = "原來『可以用』跟『擁有它』不是同一件事！";
         }
     }
@@ -291,7 +352,6 @@ public class Tutorial1_Manager : MonoBehaviour
         }
         else
         {
-            // 教學 1 完成，更新狀態並切換回攤位
             Case2State.StallPhase = 1;
             if (SceneTransition.Instance != null)
             {

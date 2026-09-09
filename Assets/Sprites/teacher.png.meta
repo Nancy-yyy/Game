@@ -116,12 +116,12 @@ TextureImporter:
       name: teacher_0
       rect:
         serializedVersion: 2
-        x: 6
-        y: 1
-        width: 523
-        height: 971
+        x: 4
+        y: 124
+        width: 527
+        height: 848
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 7aa211d69c6a47a47ad50e3358ea8dc4
     internalID: 0
     vertices: []
     indices: 

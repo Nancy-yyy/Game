@@ -36,27 +36,33 @@ public class ScaleNextB_Controller : MonoBehaviour
     public TextMeshProUGUI birdText;      // BubbleText
     public float birdDialogueInterval = 2.5f; // 兩句對話間隔 (秒)
 
-    [Header("【第六階段：時光倒流機會按鈕】")]
-    public Button timeRewindBtn;          // 拖入「時光倒流」按鈕
-    public float delayBeforeRewindBtn = 3.0f; // 第二句話講完後等待 3 秒才出現按鈕
+    [Header("【第六階段：命運之神系統框 (取代原本的時光倒流按鈕)】")]
+    public GameObject rewindSystemPanel;  // 拖入你的系統框 Panel (預設隱藏)
+    public TextMeshProUGUI rewindSystemText; // 拖入系統框上的 TMP 文字
+    public Button rewindConfirmBtn;       // 拖入系統框的確定按鈕或點擊透明按鈕
+    public float delayBeforeRewindPanel = 3.0f; // 小鳥說完第二句話後等待秒數
+
+    [TextArea(2, 4)]
+    public string rewindNoticeMessage = "命運之神眷顧了你！恭喜你獲得了重新選擇的機會！這次要認真想想你的需求噢！";
 
     void Start()
     {
+        // 初始狀態初始化
         if (bookInfoPanel != null) bookInfoPanel.SetActive(true);
         if (storyDialoguePanel != null) storyDialoguePanel.SetActive(false);
         if (hintCard != null) hintCard.SetActive(false);
         if (phase2ResultCard != null) phase2ResultCard.SetActive(false);
         if (phase3CryEnding != null) phase3CryEnding.SetActive(false);
-        if (timeRewindBtn != null) timeRewindBtn.gameObject.SetActive(false);
+        if (rewindSystemPanel != null) rewindSystemPanel.SetActive(false);
 
         if (walletBalanceText != null)
         {
             walletBalanceText.text = "【您的錢包餘額：500.00$】";
         }
 
-        if (sceneTransition == null) sceneTransition = FindObjectOfType<SceneTransition>();
+        if (sceneTransition == null) sceneTransition = SceneTransition.Instance;    
 
-        // 綁定按鈕點擊事件
+        // 綁定第一階段按鈕
         if (backToScaleBtn != null)
         {
             backToScaleBtn.onClick.RemoveAllListeners();
@@ -69,10 +75,11 @@ public class ScaleNextB_Controller : MonoBehaviour
             confirmBuyBtn.onClick.AddListener(OnConfirmBuyClicked);
         }
 
-        if (timeRewindBtn != null)
+        // 綁定系統框確定按鈕事件 (點擊回到天平)
+        if (rewindConfirmBtn != null)
         {
-            timeRewindBtn.onClick.RemoveAllListeners();
-            timeRewindBtn.onClick.AddListener(OnTimeRewindClicked);
+            rewindConfirmBtn.onClick.RemoveAllListeners();
+            rewindConfirmBtn.onClick.AddListener(OnRewindConfirmClicked);
         }
     }
 
@@ -81,8 +88,8 @@ public class ScaleNextB_Controller : MonoBehaviour
         ReturnToScaleScene();
     }
 
-    // 點擊「時光倒流」按鈕 -> 播放 TransitionCanvas 轉場滑入並返回天平場景
-    public void OnTimeRewindClicked()
+    // 點擊系統框確認按鈕 -> 觸發轉場並回到天平
+    public void OnRewindConfirmClicked()
     {
         ReturnToScaleScene();
     }
@@ -174,7 +181,7 @@ public class ScaleNextB_Controller : MonoBehaviour
 
         yield return new WaitForSeconds(0.4f);
 
-        // 2. 警告提示卡閃爍 (採用你自訂的閃爍時間)
+        // 2. 警告提示卡閃爍
         if (hintCard != null)
         {
             yield return StartCoroutine(BlinkHintCard(hintCard, 2));
@@ -214,18 +221,22 @@ public class ScaleNextB_Controller : MonoBehaviour
             birdText.text = "接下來四個月要怎麼辦呀……";
             LayoutRebuilder.ForceRebuildLayoutImmediate(birdDialogueBox.GetComponent<RectTransform>());
 
-            // 說完第二句話後，精確等待 3 秒鐘
-            yield return new WaitForSeconds(delayBeforeRewindBtn);
+            // 說完第二句話後等待指定秒數
+            yield return new WaitForSeconds(delayBeforeRewindPanel);
         }
 
-        // 8. 經過 3 秒後，顯示「時光倒流」按鈕
-        if (timeRewindBtn != null)
+        // 8. 彈出系統框並設定文字
+        if (rewindSystemPanel != null)
         {
-            timeRewindBtn.gameObject.SetActive(true);
+            if (rewindSystemText != null)
+            {
+                rewindSystemText.text = rewindNoticeMessage;
+            }
+            rewindSystemPanel.SetActive(true);
+            rewindSystemPanel.transform.SetAsLastSibling(); // 確保浮在最上層
         }
     }
 
-    // 依據你的修改：亮 0.6s / 滅 0.4s，閃完亮起展示 3s
     private IEnumerator BlinkHintCard(GameObject card, int blinkCount)
     {
         for (int i = 0; i < blinkCount; i++)

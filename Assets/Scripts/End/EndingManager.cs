@@ -114,15 +114,22 @@ public class EndingManager : MonoBehaviour
         bool answer1Correct =
             answer1.Contains("閒置") ||
             answer1.Contains("社團資產") ||
+            answer1.Contains("社團物品") ||
+            answer1.Contains("社團財產") ||
+            answer1.Contains("公用資產") ||
+            answer1.Contains("公有資產") ||
+            answer1.Contains("公用財產") ||
+            answer1.Contains("公有財產") ||
             answer1.Contains("攝影機") ||
             answer1.Contains("相機");
 
         bool answer2Correct =
-            answer2.Contains("暫時") ||
+            !answer2.Contains("所有權") &&
+            (answer2.Contains("暫時") ||
             answer2.Contains("短期") ||
             answer2.Contains("短暫") ||
             answer2.Contains("兩天") ||
-            answer2.Contains("使用權");
+            answer2.Contains("使用權"));
 
         bool answer3Correct =
             answer3.Contains("平台") ||

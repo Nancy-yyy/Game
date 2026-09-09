@@ -10,6 +10,7 @@ public class Tutorial4_Manager : MonoBehaviour
 
     [Header("【主角對話框 (第一階段)】")]
     public GameObject bottomDialoguePanel4;
+    public TextMeshProUGUI bottomDialogueSpeakerText4; // 主角姓名框
     public TextMeshProUGUI dialogueContentText4;
     public Button dialogueNextBtn4;
 
@@ -19,32 +20,42 @@ public class Tutorial4_Manager : MonoBehaviour
     public TextMeshProUGUI systemBlockText;
     public Button systemBlockNextBtn;
 
-    [Header("【系統框尺寸與位置調節 (可直接在面板微調)】")]
+    [Header("【系統框尺寸與位置調節 (可在 Inspector 自由調整)】")]
     [Tooltip("第一階段：畫面中央解說框的位置與大小")]
     public Vector2 posCenter = new Vector2(0f, 0f);
-    public Vector2 sizeCenter = new Vector2(1050f, 360f); // 加大以防字體溢位
+    public Vector2 sizeCenter = new Vector2(1100f, 400f); 
 
     [Tooltip("左右對比階段：底部解說框的位置與大小")]
     public Vector2 posPostCards = new Vector2(0f, -345f);
-    public Vector2 sizePostCards = new Vector2(1100f, 360f);
+    public Vector2 sizePostCards = new Vector2(1150f, 380f);
 
     [Tooltip("案例與線索階段：底部解說框的位置與大小")]
     public Vector2 posCaseQuiz = new Vector2(0f, -340f);
-    public Vector2 sizeCaseQuiz = new Vector2(1050f, 340f);
+    public Vector2 sizeCaseQuiz = new Vector2(1100f, 380f);
 
     [Header("【錯誤警告彈窗】")]
     public GameObject warningBoxPanel;
     public TextMeshProUGUI warningText;
     public Button warningConfirmBtn;
 
+    [Header("【音效設定】")]
+    public AudioSource audioSource;
+    public AudioClip correctSFX;
+    public AudioClip wrongSFX;
+
     [Header("【第 1 幕：左右對比展示卡】")]
     public GameObject rentVsReuseGroup;
 
     [Header("【第 2 幕：偵測容器與提示 (Hint)】")]
     public GameObject detectorInteractionGroup;
-    public RectTransform detectorHintRect;       // 拖入 HintPanel 的 RectTransform
-    public Button detectorHintDismissBtn;        // 拖入全螢幕點擊關閉按鈕
+    public RectTransform detectorHintRect;       
+    public Button detectorHintDismissBtn;        
     public float hintSlideDuration = 0.35f;
+    [Tooltip("Hint 滑出螢幕上方的藏匿座標")]
+    public Vector2 hintStartPos = new Vector2(0f, 1200f);
+    [Tooltip("Hint 停在畫面中央的目標座標")]
+    public Vector2 hintTargetPos = new Vector2(0f, 0f); 
+
     public Tutorial4DropSlot slot1_Source;      // ① 資源來源 (Clue 5)
     public Tutorial4DropSlot slot2_Status;      // ② 資源狀態 (Clue 2)
     public Tutorial4DropSlot slot3_Usage;       // ③ 使用方式 (Clue 3)
@@ -71,7 +82,7 @@ public class Tutorial4_Manager : MonoBehaviour
     private readonly string[] centerSysLines = new string[]
     {
         "不一定歐！",
-        "『租借』描述的是使用方式，\n但共享經濟還需要進一步觀察",
+        "『租借』描述的是使用方式，\n但共享經濟還需要進一步觀察：",
         "像是資源從哪裡來，\n以及原本是否存在未被充分利用的資源",
         "所以先別急著把『租借』和『共享經濟』\n畫上等號！"
     };
@@ -87,7 +98,7 @@ public class Tutorial4_Manager : MonoBehaviour
 
     private readonly string[] postClueSysLines = new string[]
     {
-        "你已經找到區分『一般租賃』與『閒置資源再利用』的重要線索。",
+        "你已經找到區分『一般租賃』與\n『閒置資源再利用』的重要線索",
         "但不是所有『借東西』的服務，都符合這些條件。",
         "來看看這些條件吧！"
     };
@@ -100,18 +111,32 @@ public class Tutorial4_Manager : MonoBehaviour
         if (caseQuizGroup != null) caseQuizGroup.SetActive(false);
         if (selfInputReflectionPanel != null) selfInputReflectionPanel.SetActive(false);
         if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
+
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.spatialBlend = 0f;
+        audioSource.playOnAwake = false;
     }
 
     void Start()
     {
         if (titleImage != null) titleImage.SetActive(true);
 
-        // ⭐ 自動啟用 TMP 防溢位設定
+        // ⭐ 統一指派主角姓名
+        if (bottomDialogueSpeakerText4 != null)
+        {
+            bottomDialogueSpeakerText4.text = GameData.PlayerName;
+        }
+
         if (systemBlockText != null)
         {
             systemBlockText.enableAutoSizing = true;
-            systemBlockText.fontSizeMin = 22f;
-            systemBlockText.fontSizeMax = 38f;
+            systemBlockText.fontSizeMin = 16f;
+            systemBlockText.fontSizeMax = 36f;
+            systemBlockText.textWrappingMode = TextWrappingModes.Normal;
         }
 
         if (clueCards != null)
@@ -295,17 +320,16 @@ public class Tutorial4_Manager : MonoBehaviour
         detectorHintRect.gameObject.SetActive(true);
         if (detectorHintDismissBtn != null) detectorHintDismissBtn.gameObject.SetActive(true);
 
-        Vector2 startPos = new Vector2(0f, 1200f);
-        Vector2 targetPos = new Vector2(0f, 400f);
         float elapsed = 0f;
+        detectorHintRect.anchoredPosition = hintStartPos;
 
         while (elapsed < hintSlideDuration)
         {
             elapsed += Time.deltaTime;
-            detectorHintRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, elapsed / hintSlideDuration);
+            detectorHintRect.anchoredPosition = Vector2.Lerp(hintStartPos, hintTargetPos, elapsed / hintSlideDuration);
             yield return null;
         }
-        detectorHintRect.anchoredPosition = targetPos;
+        detectorHintRect.anchoredPosition = hintTargetPos;
     }
 
     public void DismissDetectorHint()
@@ -318,17 +342,16 @@ public class Tutorial4_Manager : MonoBehaviour
     {
         if (detectorHintRect == null) yield break;
 
-        Vector2 startPos = detectorHintRect.anchoredPosition;
-        Vector2 targetPos = new Vector2(0f, 1200f);
         float elapsed = 0f;
+        Vector2 startPos = detectorHintRect.anchoredPosition;
 
         while (elapsed < hintSlideDuration)
         {
             elapsed += Time.deltaTime;
-            detectorHintRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, elapsed / hintSlideDuration);
+            detectorHintRect.anchoredPosition = Vector2.Lerp(startPos, hintStartPos, elapsed / hintSlideDuration);
             yield return null;
         }
-        detectorHintRect.anchoredPosition = targetPos;
+        detectorHintRect.anchoredPosition = hintStartPos;
         detectorHintRect.gameObject.SetActive(false);
     }
 
@@ -385,6 +408,8 @@ public class Tutorial4_Manager : MonoBehaviour
 
         if (isCorrect)
         {
+            PlaySFX(correctSFX);
+
             slot1_Source.currentCard.LockPlaced();
             slot2_Status.currentCard.LockPlaced();
             slot3_Usage.currentCard.LockPlaced();
@@ -392,12 +417,27 @@ public class Tutorial4_Manager : MonoBehaviour
         }
         else
         {
+            PlaySFX(wrongSFX);
+
+            // ⭐ 累計 Tutorial 4 線索錯誤次數
+            GameData.Case2_Tutorial4_ClueErrors++;
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
                 warningBoxPanel.transform.SetAsLastSibling();
-                if (warningText != null)
-                    warningText.text = "這些線索好像不太對歐...";
+
+                // ⭐【此為 Tutorial 4 第 2 幕線索偵測錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 4 線索組合錯誤高資訊回饋內容】注意線索組合：共享經濟必須同時具備『由其他使用者提供（非廠商）』、『原本處於閒置未利用』以及『既有資產再次被利用』。";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "這些線索好像不太對歐...這張線索無法證明資產原本處於閒置狀態。";
+                }
             }
         }
     }
@@ -448,6 +488,8 @@ public class Tutorial4_Manager : MonoBehaviour
     {
         if (isCorrect)
         {
+            PlaySFX(correctSFX);
+
             if (caseA_Btn != null) caseA_Btn.interactable = false;
             if (caseB_Btn != null) caseB_Btn.interactable = false;
             if (caseC_Btn != null) caseC_Btn.interactable = false;
@@ -456,11 +498,27 @@ public class Tutorial4_Manager : MonoBehaviour
         }
         else
         {
+            PlaySFX(wrongSFX);
+
+            // ⭐ 累計 Tutorial 4 案例選擇錯誤次數
+            GameData.Case2_Tutorial4_CaseErrors++;
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
                 warningBoxPanel.transform.SetAsLastSibling();
-                if (warningText != null) warningText.text = "好像不太對歐";
+
+                // ⭐【此為 Tutorial 4 第 3 幕案例選擇錯誤 - 高低資訊回饋內容】
+                if (GameData.IsHighInfo)
+                {
+                    if (warningText != null)
+                        warningText.text = "【此為 Tutorial 4 案例選擇錯誤高資訊回饋內容】請注意書籍庫存的來源：是平台自己大量採購新品來出租，還是由其他學生釋出自己原本不用的書呢？後者才是真正的共享經濟！";
+                }
+                else
+                {
+                    if (warningText != null)
+                        warningText.text = "好像不太對歐";
+                }
             }
         }
     }
@@ -480,8 +538,17 @@ public class Tutorial4_Manager : MonoBehaviour
 
         if (systemBlockPanel != null)
         {
-            if (systemBlockText != null)
-                systemBlockText.text = "三種情況都可能讓使用者取得一本書，但它們的資源來源與運作方式不同\n其中，B 最符合『既有閒置資產重新被利用』的特徵。";
+            // ⭐【此為 Tutorial 4 案例 B 答對 - 高低資訊回饋內容】
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "【此為 Tutorial 4 案例答對高資訊回饋內容】沒錯喲！B 選項是由學生提供自己暫時不用的書，最符合共享經濟『利用既有閒置資產』的特徵。";
+            }
+            else
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "三種情況都可能讓使用者取得一本書，\n但它們的資源來源與運作方式不同\n其中，B 最符合『既有閒置資產重新被利用』的特徵。";
+            }
 
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
             isWaitingCaseQuizNext = true;
@@ -506,13 +573,29 @@ public class Tutorial4_Manager : MonoBehaviour
         if (answerInputField != null) answerInputField.interactable = false;
         if (submitReflectionBtn != null) submitReflectionBtn.interactable = false;
 
+        PlaySFX(correctSFX);
+
+        // ⭐ 將自主反思存入 GameData
+        GameData.Case2_Tutorial4_Reflection = userInput;
+
         if (systemBlockPanel != null && systemBlockRect != null)
         {
             UpdateBlockTransform(posCaseQuiz, sizeCaseQuiz);
             systemBlockPanel.SetActive(true);
             systemBlockPanel.transform.SetAsLastSibling();
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
-            if (systemBlockText != null) systemBlockText.text = "已記錄你的回答";
+
+            // ⭐【此為 Tutorial 4 第 4 幕反思送出 - 高低資訊回饋內容】
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "【此為 Tutorial 4 反思送出高資訊回饋內容】已記錄你的回答！從你的想法中可以看出，你已經掌握了『資源來源』與『再次利用』這兩大核心！";
+            }
+            else
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "已記錄你的回答";
+            }
         }
 
         Case2State.StallPhase = 2;
@@ -533,7 +616,14 @@ public class Tutorial4_Manager : MonoBehaviour
         }
     }
 
-    // ⭐ 統一更新位置與尺寸，並即時強制重算佈局防止殘留與溢位
+    private void PlaySFX(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
     private void UpdateBlockTransform(Vector2 targetPos, Vector2 targetSize)
     {
         if (systemBlockRect == null) return;

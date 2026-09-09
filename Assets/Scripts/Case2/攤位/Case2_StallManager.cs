@@ -178,9 +178,11 @@ public class Case2_StallManager : MonoBehaviour
                 if (characterContentText != null) characterContentText.gameObject.SetActive(true);
                 
                 if (characterContentText != null) characterContentText.text = entry.content;
+                
+                // ⭐ 統一呼叫：只要是主角說話，直接指派 GameData.PlayerName，其餘顯示原角色名（如：學長）
                 if (characterNameText != null)
                 {
-                    characterNameText.text = (entry.speakerName == "主角" && !string.IsNullOrEmpty(GameData.PlayerName)) 
+                    characterNameText.text = (entry.speakerName == "主角") 
                         ? GameData.PlayerName 
                         : entry.speakerName;
                 }

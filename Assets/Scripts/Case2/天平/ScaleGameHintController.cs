@@ -20,7 +20,7 @@ public class ScaleGameHintController : MonoBehaviour
         StartCoroutine(SlideInRoutine());
     }
 
-    // ⭐ 從 (0, 1200) 滑入到 (0, 400)
+    // ⭐ 從 (0, 1200) 滑入到 (0, 200)
     private IEnumerator SlideInRoutine()
     {
         if (hintPanelRect == null) yield break;
@@ -29,7 +29,7 @@ public class ScaleGameHintController : MonoBehaviour
         if (screenDismissButton != null) screenDismissButton.gameObject.SetActive(true);
 
         Vector2 startPos = new Vector2(0f, 1200f);
-        Vector2 targetPos = new Vector2(0f, 400f);
+        Vector2 targetPos = new Vector2(0f, 200f);
         float elapsed = 0f;
 
         while (elapsed < slideDuration)
@@ -47,7 +47,7 @@ public class ScaleGameHintController : MonoBehaviour
         StartCoroutine(SlideOutRoutine());
     }
 
-    // ⭐ 從 (0, 400) 滑回 (0, 1200)
+    // ⭐ 從 (0, 200) 滑回 (0, 1200)
     private IEnumerator SlideOutRoutine()
     {
         if (hintPanelRect == null) yield break;
