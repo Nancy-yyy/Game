@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\Case2\DialogueManager.cs" />
     <Compile Include="Assets\Scripts\Case2\教學\Tutorial2_Manager.cs" />
     <Compile Include="Assets\Scripts\End\EndingDialogueManager.cs" />
+    <Compile Include="Assets\Scripts\AI\AITutorSidebar.cs" />
     <Compile Include="Assets\Scripts\End\EndingHatchingManager.cs" />
     <Compile Include="Assets\Scripts\Case3\DraggableRuleCard.cs" />
     <Compile Include="Assets\Scripts\Case3\ImageSequenceController.cs" />
@@ -123,6 +124,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile-2-Pass.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Mobile.cginc" />
+    <None Include="Assets\Scripts\AI\AI_Server\data\case1_transport.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF SSD.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Surface-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\SDFFunctions.hlsl" />
@@ -134,11 +136,14 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />
     <None Include="Assets\TextMesh Pro\Shaders\TMPro_Surface.cginc" />
     <None Include="Assets\TextMesh Pro\Resources\LineBreaking Following Characters.txt" />
+    <None Include="Assets\Scripts\AI\AI_Server\data\case2_textbook.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Masking.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\Scripts\AI\AI_Server\data\datasystem_rules.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
+    <None Include="Assets\Scripts\AI\AI_Server\data\case3_space.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>
   <ItemGroup>
