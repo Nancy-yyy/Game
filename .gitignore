@@ -5,3 +5,5 @@ Build/
 Builds/ 
 Logs/ 
 MemoryCaptures/ 
+Assets/Scripts/AI/AI_Server/.env
+**/scripts/__pycache__/

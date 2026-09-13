@@ -209,7 +209,7 @@ public class Tutorial2_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 2 選擇錯誤高資訊回饋內容】可以想想『目前沒有人使用』與『這項資產已經失去使用價值』是不是同一件事呢？它的內容依然完整且對其他人有用！";
+                        warningText.text = "可以想想『目前沒有人使用』與『這項資產已經失去使用價值』是不是同一件事呢？它的內容依然完整且對其他人有用！";
                 }
                 else
                 {
@@ -232,7 +232,7 @@ public class Tutorial2_Manager : MonoBehaviour
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null) 
-                    systemBlockText.text = "【此為 Tutorial 2 答對高資訊回饋內容】沒錯！即使原持有人暫時不需要，資產的剩餘使用價值依然存在，這就是形成『閒置資產』的重要基礎。";
+                    systemBlockText.text = "沒錯！即使原持有人暫時不需要，資產的剩餘使用價值依然存在，這就是形成『閒置資產』的重要基礎。";
             }
             else
             {

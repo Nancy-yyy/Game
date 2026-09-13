@@ -489,7 +489,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7031332765439158097, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0000017533184
+      value: -0.0000043830637
       objectReference: {fileID: 0}
     - target: {fileID: 7763937975222689784, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_AnchorMax.x
@@ -10463,7 +10463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7031332765439158097, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0000017533184
+      value: -0.0000043830637
       objectReference: {fileID: 0}
     - target: {fileID: 7763937975222689784, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_AnchorMax.x
@@ -16943,7 +16943,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5225\u7070\u5FC3\uFF01\u770B\u4F86\u6211\u5011\u9700\u8981\u7528\u9032\u968E\u641C\u5C0B\u7684\u65B9\u6CD5\uFF0C\u628A\u9700\u6C42\u653E\u5165\u689D\u4EF6\uFF0C\u770B\u770B\u54EA\u500B\u7A7A\u9593\u9069\u5408\uFF1F"
+  m_text: "\u5225\u64D4\u5FC3\u4E3B\u4EBA!\u6211\u5011\u4E0A\u3010\u5BB9\u8EAB\u4E4B\u8655\u3011\u5E73\u53F0\u4F86\u6839\u64DA\u9032\u968E\u641C\u5C0B\u627E\u5C0B\u66F4\u9069\u5408\u7684\u5834\u666F\u5427~"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 88d91775b436ff242916eb6f73735995, type: 2}
   m_sharedMaterial: {fileID: 4518035279102472469, guid: 88d91775b436ff242916eb6f73735995, type: 2}
