@@ -75,19 +75,24 @@ public class AITutorSidebar : MonoBehaviour
     private List<ChatHistoryRecord> chatHistoryList = new List<ChatHistoryRecord>();
 
     private void Awake()
-    {
-        // 1. 自動取得當前 Scene 名稱作為 case_id 傳給後端
-        currentCaseId = SceneManager.GetActiveScene().name;
+{
+    // 1. 自動取得當前 Scene 名稱作為 case_id 傳給後端
+    currentCaseId = SceneManager.GetActiveScene().name;
 
-        // 2. ⭐ 自動補血防呆移至 Awake：確保在任何場景按 Play 都能第一時間拿到身分
-        if (string.IsNullOrEmpty(GameData.SubjectID))
-        {
-            GameData.SubjectID = "Test_Dev";
-            GameData.PlayerName = "測試主角";
-            GameData.CurrentCondition = ExperimentCondition.HighInfo_AI; // 預設開 AI 方便測試
-            Debug.Log($"<color=#00FF00>【場景 {currentCaseId} 獨立測試】已自動配置 AI 助教！</color>");
-        }
+    // 2. ⭐ 同時判定 SubjectID 與 PlayerName：若已有玩家名字，絕不覆蓋
+    if (string.IsNullOrEmpty(GameData.SubjectID) && string.IsNullOrEmpty(GameData.PlayerName))
+    {
+        GameData.SubjectID = "Test_Dev";
+        GameData.PlayerName = "測試主角";
+        GameData.CurrentCondition = ExperimentCondition.HighInfo_AI;
+        Debug.Log($"<color=#00FF00>【場景 {currentCaseId} 獨立測試】已自動配置預設測試身分與 AI！</color>");
     }
+    else if (string.IsNullOrEmpty(GameData.SubjectID) && !string.IsNullOrEmpty(GameData.PlayerName))
+    {
+        // 若前面已有玩家名字，補上 SubjectID 同步即可，不覆蓋姓名
+        GameData.SubjectID = GameData.PlayerName;
+    }
+}
     private void Start()
     {
         // 3. 實驗組別判定：無 AI 則隱藏整個側欄物件

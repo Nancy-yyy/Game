@@ -15,13 +15,13 @@ public class ScaleNextC_Controller : MonoBehaviour
 
     [Header("【第二階段：合約與手寫簽名】")]
     public GameObject contractPanel;        
-    public Button signOrStampBtn;           // 合約上的簽名按鈕
-    public RawImage contractSignDisplay;    // 合約上的簽名圖格
-    public SignaturePad signaturePad;       // SignaturePopupPanel
-    public GameObject stampImage;           // StampImage (印章)
-    public GameObject backpackObj;          // Backpack 物件 (預設關閉)
-    public RectTransform bookRect;          // Book 物件 (預設關閉)
-    public RectTransform backpackRect;      // Backpack 的 RectTransform
+    public Button signOrStampBtn;           
+    public RawImage contractSignDisplay;    
+    public SignaturePad signaturePad;       
+    public GameObject stampImage;           
+    public GameObject backpackObj;          
+    public RectTransform bookRect;          
+    public RectTransform backpackRect;      
     public AudioSource audioSource;         
     public AudioClip stampSFX;              // 蓋章聲 (咚！)
 
@@ -35,22 +35,29 @@ public class ScaleNextC_Controller : MonoBehaviour
     public Button submitReasonsBtn;       
 
     [Header("【第四階段：錯誤提示系統 (System_msg)】")]
-    public RectTransform systemMsgPanel;    // 拖入 System_msg 面板
-    public float sysMsgSlideDuration = 0.5f; // 滑動速度
-    public float sysMsgDisplayDuration = 5.0f; // 停留秒數 (5秒)
+    public RectTransform systemMsgPanel;    
+    public float sysMsgSlideDuration = 0.5f; 
+    public float sysMsgDisplayDuration = 5.0f; 
     private Coroutine activeSysMsgRoutine;
     private Vector2 sysMsgTargetPos;
     private Vector2 sysMsgHidePos;
 
-    [Header("【第五階段：鳥鳥回饋與返回攤位】")]
+    [Header("【第五階段：鳥鳥回饋】")]
     public GameObject birdFeedbackBubble; 
     public TextMeshProUGUI birdFeedbackText; 
-    public Button birdFeedbackClickBtn;     // 點擊後進入攤位結尾（可綁在氣泡本身或透明按鈕）
-    public string stallSceneName = "Case2_03_Stall"; // 攤位場景名稱
+    public Button birdFeedbackClickBtn;     
+    public string stallSceneName = "Case2_03_Stall"; 
+
+    [Header("【第六階段：任務打勾面板 (Checklist)】")]
+    public GameObject abilityChecklistPanel; // 拖入 AbilityChecklistPanel
+    public GameObject checklistImage1;       // 拖入 ChecklistImage1 (1 個勾)
+    public GameObject checklistImage2;       // 拖入 ChecklistImage2 (2 個勾)
+    public AudioClip checkmarkDingSFX;       // 拖入 打勾音效 (噹！/ 叮咚聲)
+    public float waitBeforeCheck = 0.6f;     // 跳出面板後多久打勾
+    public float displayAfterCheck = 1.8f;   // 打勾後停留幾秒進入攤位
 
     void Start()
     {
-        // 初始狀態配置
         if (bookInfoPanel != null) bookInfoPanel.SetActive(true);
         if (contractPanel != null) contractPanel.SetActive(false);
         if (signaturePad != null) signaturePad.gameObject.SetActive(false);
@@ -60,7 +67,11 @@ public class ScaleNextC_Controller : MonoBehaviour
         if (reasonQuizPanel != null) reasonQuizPanel.SetActive(false);
         if (birdFeedbackBubble != null) birdFeedbackBubble.SetActive(false);
 
-        // 初始化 System_msg 隱藏位置
+        // 初始化任務清單面板隱藏
+        if (abilityChecklistPanel != null) abilityChecklistPanel.SetActive(false);
+        if (checklistImage1 != null) checklistImage1.SetActive(false);
+        if (checklistImage2 != null) checklistImage2.SetActive(false);
+
         if (systemMsgPanel != null)
         {
             sysMsgTargetPos = systemMsgPanel.anchoredPosition;
@@ -73,7 +84,6 @@ public class ScaleNextC_Controller : MonoBehaviour
 
         if (sceneTransition == null) sceneTransition = FindObjectOfType<SceneTransition>();
 
-        // 綁定按鈕事件
         if (backToScaleBtn != null)
         {
             backToScaleBtn.onClick.RemoveAllListeners();
@@ -113,7 +123,7 @@ public class ScaleNextC_Controller : MonoBehaviour
             submitReasonsBtn.onClick.AddListener(OnSubmitReasonsClicked);
         }
 
-        // 鳥鳥回饋點擊監聽：手動點擊後才觸發返回攤位
+        // 鳥鳥氣泡點擊監聽
         if (birdFeedbackClickBtn != null)
         {
             birdFeedbackClickBtn.onClick.RemoveAllListeners();
@@ -132,14 +142,8 @@ public class ScaleNextC_Controller : MonoBehaviour
 
     public void OnBackToScaleClicked()
     {
-        if (sceneTransition != null)
-        {
-            sceneTransition.StartTransitionAndLoadScene(previousSceneName);
-        }
-        else
-        {
-            SceneManager.LoadScene(previousSceneName);
-        }
+        if (sceneTransition != null) sceneTransition.StartTransitionAndLoadScene(previousSceneName);
+        else SceneManager.LoadScene(previousSceneName);
     }
 
     public void OnConfirmBuyClicked()
@@ -182,7 +186,6 @@ public class ScaleNextC_Controller : MonoBehaviour
             audioSource.PlayOneShot(stampSFX);
         }
 
-        // 1. 印章砸下
         if (stampImage != null)
         {
             stampImage.SetActive(true);
@@ -203,7 +206,6 @@ public class ScaleNextC_Controller : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
 
-        // 2. 背包與書本出現，書本滑入背包
         if (backpackObj != null) backpackObj.SetActive(true);
 
         if (bookRect != null)
@@ -238,7 +240,6 @@ public class ScaleNextC_Controller : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
 
-        // 3. 開啟理由選擇題
         if (contractPanel != null) contractPanel.SetActive(false);
         if (reasonQuizPanel != null)
         {
@@ -259,11 +260,10 @@ public class ScaleNextC_Controller : MonoBehaviour
         {
             if (systemMsgPanel != null) systemMsgPanel.gameObject.SetActive(false);
 
-            // 彈出鳥鳥回饋氣泡，不再以時間倒數自動跳轉
             if (birdFeedbackBubble != null && birdFeedbackText != null)
             {
                 birdFeedbackBubble.SetActive(true);
-                birdFeedbackText.text = "哇！主人好像找到一個不會讓錢包哭哭的方法了！";
+                birdFeedbackText.text = "哇！主人好像找到一個不會讓錢包哭哭的方法了！\n(點擊繼續)";
                 LayoutRebuilder.ForceRebuildLayoutImmediate(birdFeedbackBubble.GetComponent<RectTransform>());
             }
 
@@ -276,11 +276,42 @@ public class ScaleNextC_Controller : MonoBehaviour
         }
     }
 
-    // 玩家點擊鳥鳥氣泡或按鈕後觸發
-    // 玩家點擊鳥鳥氣泡後觸發
+    // ⭐ 點擊鳥鳥後：開啟任務清單 ➔ 切圖打勾 ➔ 播放噹一聲 ➔ 返回攤位
     public void OnBirdFeedbackClicked()
     {
-        // ⭐ 標記攤位為第七幕「最終感悟結尾」對話狀態
+        StartCoroutine(ShowChecklistAndProceedRoutine());
+    }
+
+    private IEnumerator ShowChecklistAndProceedRoutine()
+    {
+        // 1. 隱藏題目與鳥鳥氣泡
+        if (reasonQuizPanel != null) reasonQuizPanel.SetActive(false);
+        if (birdFeedbackBubble != null) birdFeedbackBubble.SetActive(false);
+
+        // 2. 彈出任務面板 (先顯示只有 1 個勾的圖片)
+        if (abilityChecklistPanel != null)
+        {
+            abilityChecklistPanel.SetActive(true);
+            if (checklistImage1 != null) checklistImage1.SetActive(true);
+            if (checklistImage2 != null) checklistImage2.SetActive(false);
+        }
+
+        // 3. 等待片刻 (0.6 秒)
+        yield return new WaitForSeconds(waitBeforeCheck);
+
+        // 4. 切換為 2 個勾的圖片，並播放「噹！」的一聲
+        if (checklistImage1 != null) checklistImage1.SetActive(false);
+        if (checklistImage2 != null) checklistImage2.SetActive(true);
+
+        if (audioSource != null && checkmarkDingSFX != null)
+        {
+            audioSource.PlayOneShot(checkmarkDingSFX);
+        }
+
+        // 5. 停留 1.8 秒讓玩家看到獲得第二個打勾
+        yield return new WaitForSeconds(displayAfterCheck);
+
+        // 6. 設定狀態並切換回攤位
         Case2State.StallPhase = 3;
 
         if (sceneTransition != null)

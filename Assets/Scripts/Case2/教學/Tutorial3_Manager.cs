@@ -250,7 +250,7 @@ public class Tutorial3_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 3A 漫畫排序錯誤高資訊回饋內容】順序不太對喔！請注意：必須先存在『閒置資產』與『新需求出現』，才能進入『媒合取得使用權』，最後達成『資產再次被使用』。";
+                        warningText.text = "順序不太對喔！請注意：必須先存在『閒置資產』與『新需求出現』，才能進入『媒合取得使用權』，最後達成『資產再次被使用』。";
                 }
                 else
                 {
@@ -291,7 +291,7 @@ public class Tutorial3_Manager : MonoBehaviour
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "【此為 Tutorial 3A 排序完成高資訊回饋內容】沒錯就是這樣！閒置資源透過媒合重新流動，讓不需要買斷的人也能在對的時間滿足需求。";
+                    systemBlockText.text = "沒錯就是這樣！閒置資源透過媒合重新流動，讓不需要買斷的人也能在對的時間滿足需求。";
             }
             else
             {
@@ -332,7 +332,7 @@ public class Tutorial3_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (systemBlockText != null)
-                        systemBlockText.text = "【此為 Tutorial 3B 情境答對高資訊回饋內容】沒錯！B 選項讓同一本已存在的實體書在不同時間被多位同學重複使用，最能將閒置容量發揮到極致。\n我們繼續往下看！";
+                        systemBlockText.text = "沒錯！B 選項讓同一本已存在的實體書在不同時間被多位同學重複使用，最能將閒置容量發揮到極致。\n我們繼續往下看！";
                 }
                 else
                 {
@@ -359,7 +359,7 @@ public class Tutorial3_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 3B 情境錯誤高資訊回饋內容】好像不太對呢...購買新書或長期放著沒有在提高資產利用率，請比較哪一個選項真正讓『既有閒置資源』被循環利用！";
+                        warningText.text = "好像不太對呢...購買新書或長期放著沒有在提高資產利用率，請比較哪一個選項真正讓『既有閒置資源』被循環利用！";
                 }
                 else
                 {

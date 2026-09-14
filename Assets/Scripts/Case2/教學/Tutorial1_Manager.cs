@@ -278,7 +278,7 @@ public class Tutorial1_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 1 問答錯誤高資訊回饋內容】可以想想你取得的是『資產本身的所有處分權』，還是『在特定期限或條件下使用它的資格』。";
+                        warningText.text = "可以想想你取得的是「資產本身的所有處分權」，還是「在特定期限或條件下使用它的資格」呢？";
                 }
                 else
                 {
@@ -318,7 +318,7 @@ public class Tutorial1_Manager : MonoBehaviour
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "【此為 Tutorial 1 完成高資訊回饋內容】太棒了！你已經能清楚辨別：擁有資產是取得處分的所有權，而租借與訂閱則是在約定期限內取得使用權。";
+                    systemBlockText.text = "太棒了！你已經能清楚辨別：擁有資產是取得處分的所有權，而租借與訂閱則是在約定期限內取得使用權。";
             }
             else
             {
@@ -338,7 +338,7 @@ public class Tutorial1_Manager : MonoBehaviour
         }
         else if (endingDialogueStep == 1)
         {
-            if (bottomSpeakerText != null) bottomSpeakerText.text = "GameData.PlayerName";
+            if (bottomSpeakerText != null) bottomSpeakerText.text = GameData.PlayerName;
             if (bottomContentText != null) bottomContentText.text = "原來『可以用』跟『擁有它』不是同一件事！";
         }
     }

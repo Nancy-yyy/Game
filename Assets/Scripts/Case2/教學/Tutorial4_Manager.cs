@@ -431,12 +431,12 @@ public class Tutorial4_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 4 線索組合錯誤高資訊回饋內容】注意線索組合：共享經濟必須同時具備『由其他使用者提供（非廠商）』、『原本處於閒置未利用』以及『既有資產再次被利用』。";
+                        warningText.text = "注意線索組合：共享經濟的提供者會是？資產會是使用中還是閒置的呢？使用狀況又會是？";
                 }
                 else
                 {
                     if (warningText != null)
-                        warningText.text = "這些線索好像不太對歐...這張線索無法證明資產原本處於閒置狀態。";
+                        warningText.text = "這些線索好像不太對歐...這張線索無法證明資產是共享經濟呢...";
                 }
             }
         }
@@ -512,7 +512,7 @@ public class Tutorial4_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "【此為 Tutorial 4 案例選擇錯誤高資訊回饋內容】請注意書籍庫存的來源：是平台自己大量採購新品來出租，還是由其他學生釋出自己原本不用的書呢？後者才是真正的共享經濟！";
+                        warningText.text = "請注意書籍庫存的來源：是平台自己大量採購新品來出租，還是由其他學生釋出自己原本不用的書呢？哪個才是真正的共享經濟？";
                 }
                 else
                 {
@@ -575,7 +575,7 @@ public class Tutorial4_Manager : MonoBehaviour
 
         PlaySFX(correctSFX);
 
-        // ⭐ 將自主反思存入 GameData
+        // 將自主反思字串寫入 GameData
         GameData.Case2_Tutorial4_Reflection = userInput;
 
         if (systemBlockPanel != null && systemBlockRect != null)
@@ -585,21 +585,71 @@ public class Tutorial4_Manager : MonoBehaviour
             systemBlockPanel.transform.SetAsLastSibling();
             if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
 
-            // ⭐【此為 Tutorial 4 第 4 幕反思送出 - 高低資訊回饋內容】
+            // ⭐ 判斷高低資訊回饋
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "【此為 Tutorial 4 反思送出高資訊回饋內容】已記錄你的回答！從你的想法中可以看出，你已經掌握了『資源來源』與『再次利用』這兩大核心！";
+                {
+                    systemBlockText.text = GenerateHighInfoFeedback(userInput);
+                }
             }
             else
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "已記錄你的回答";
+                {
+                    systemBlockText.text = "已記錄你的回答。";
+                }
             }
         }
 
         Case2State.StallPhase = 2;
         StartCoroutine(WaitAndBackToStallRoutine());
+    }
+
+    // ⭐ 關鍵字動態解析方法
+    private string GenerateHighInfoFeedback(string input)
+    {
+        System.Collections.Generic.List<string> detectedPoints = new System.Collections.Generic.List<string>();
+
+        // 1. 判斷資源來源
+        if (input.Contains("學長") || input.Contains("學生") || input.Contains("個人") || 
+            input.Contains("別人") || input.Contains("大家") || input.Contains("自己"))
+        {
+            detectedPoints.Add("『資源來自個人釋出而非廠商』");
+        }
+
+        // 2. 判斷資產狀態（閒置）
+        if (input.Contains("閒置") || input.Contains("沒用") || input.Contains("用不到") || 
+            input.Contains("放著") || input.Contains("剩下") || input.Contains("空著"))
+        {
+            detectedPoints.Add("『既有資產的閒置未利用狀態』");
+        }
+
+        // 3. 判斷使用方式（使用權/租借）
+        if (input.Contains("租") || input.Contains("借") || input.Contains("使用權") || 
+            input.Contains("輪流") || input.Contains("分享"))
+        {
+            detectedPoints.Add("『取得使用權而非買斷』");
+        }
+
+        // 4. 判斷再利用與效益
+        if (input.Contains("再利用") || input.Contains("省錢") || input.Contains("便宜") || 
+            input.Contains("浪費") || input.Contains("循環") || input.Contains("重新"))
+        {
+            detectedPoints.Add("『讓資產重新發揮剩餘價值』");
+        }
+
+        // 依據命中的關鍵字數量回饋
+        if (detectedPoints.Count > 0)
+        {
+            string pointsString = string.Join("與", detectedPoints);
+            return $"已記錄你的想法！\n你的回答精準點出了 {pointsString}，這正是共享經濟能成立的關鍵！";
+        }
+        else
+        {
+            // 若玩家輸入的話中完全沒對到關鍵字，給予引導式的高資訊解析
+            return "已記錄你的想法！\n思考這項服務時，若能同時關注『資源由誰釋出』以及『是否為既有閒置資產的再次利用』，會更加完整喔！";
+        }
     }
 
     private IEnumerator WaitAndBackToStallRoutine()
