@@ -99,6 +99,11 @@ public class Case1CarManager : MonoBehaviour
 
     private void Start()
     {
+        // ======================================
+        // AI 防暴雷：玩家進入車內資源觀察階段
+        AIProgress.SetStoryStep("case1_car_started");
+        // ======================================
+
         systemAssetPanel.SetActive(false);
         StartCoroutine(ShowSystemAssetPanelAfterDelay());
         
@@ -314,6 +319,7 @@ public class Case1CarManager : MonoBehaviour
             carInteractionPanel.SetActive(true);
             interactionHintUI.SetActive(true);
         }
+        
     }
 
     public void ClickTrunk()
@@ -342,6 +348,7 @@ public class Case1CarManager : MonoBehaviour
         {
             playerEndDialogueUI.SetActive(true);
         }
+
     }
 
     public void CloseSystemAnalysis()
@@ -373,6 +380,11 @@ public class Case1CarManager : MonoBehaviour
 
     public void EnterCase1Matching()
     {
+        // ======================================
+        // AI 防暴雷：玩家已完成閒置容量辨識
+        AIProgress.SetStoryStep("case1_idle_capacity_completed");
+        // ======================================
+
         SceneManager.LoadScene("Case1Matching");
     }
 }

@@ -87,6 +87,7 @@
     <Compile Include="Assets\Scripts\Case2\教學\Tutorial4DropSlot.cs" />
     <Compile Include="Assets\Scripts\AI\AITutorClient.cs" />
     <Compile Include="Assets\Scripts\Case2\Case2State.cs" />
+    <Compile Include="Assets\Scripts\AI\AIProgress.cs" />
     <Compile Include="Assets\Scripts\Case3\UIFlyInAnimator.cs" />
     <Compile Include="Assets\Scripts\AI\AIBirdSidebarUI.cs" />
     <Compile Include="Assets\Scripts\Core\GameData.cs" />

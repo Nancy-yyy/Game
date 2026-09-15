@@ -39,6 +39,7 @@ public class Tutorial3_Manager : MonoBehaviour
     private int sysStep = 0;
     private bool isComicPhase = false;
     private bool isInitialized = false;
+    private bool isWaitingComicCorrectNext = false;
 
     private readonly string[] postComicDialogues = new string[]
     {
@@ -145,6 +146,25 @@ public class Tutorial3_Manager : MonoBehaviour
 
     public void OnClickSystemBlockNext()
     {
+        // ======================================
+        // 手動點擊控制：漫畫答對提示 → 下一段系統訊息
+        // ======================================
+        if (isWaitingComicCorrectNext)
+        {
+            isWaitingComicCorrectNext = false;
+
+            if (comicDragDropGroup != null)
+                comicDragDropGroup.SetActive(false);
+
+            sysStep = 0;
+
+            if (systemBlockText != null)
+                systemBlockText.text = postComicDialogues[0];
+
+            return;
+        }
+        // ======================================
+        
         if (!isComicPhase)
         {
             isComicPhase = true;
@@ -300,16 +320,9 @@ public class Tutorial3_Manager : MonoBehaviour
             }
         }
 
-        yield return new WaitForSeconds(1.5f);
-
-        if (comicDragDropGroup != null) comicDragDropGroup.SetActive(false);
-
-        sysStep = 0;
-        if (systemBlockPanel != null)
-        {
-            if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
-            if (systemBlockText != null) systemBlockText.text = postComicDialogues[0];
-        }
+        isWaitingComicCorrectNext = true;
+        if (systemBlockNextBtn != null)
+            systemBlockNextBtn.interactable = true;
     }
 
     public void OnSelectScenario(bool isCorrect)
@@ -345,6 +358,10 @@ public class Tutorial3_Manager : MonoBehaviour
             {
                 TutorialCarouselManager.Instance.UnlockNextPage(3);
             }
+            // ======================================
+            // AI 防暴雷：玩家已完成閒置資產再利用教學
+            AIProgress.SetStoryStep("case2_idle_reuse_completed");
+            // ======================================
         }
         else
         {

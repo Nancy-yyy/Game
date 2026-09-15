@@ -39,6 +39,7 @@ public class Tutorial2_Manager : MonoBehaviour
     private int teachStep = 0;
     private int conclusionStep = 0;
     private bool isConclusionPhase = false;
+    private bool isWaitingCorrectMessageNext = false;
 
     private readonly string[] introDialogueLines = new string[]
     {
@@ -140,6 +141,22 @@ public class Tutorial2_Manager : MonoBehaviour
 
     public void OnClickSystemBlockNext()
     {
+        // ======================================
+        // 手動點擊控制：答對提示 → 結論第一句
+        // ======================================
+        if (isWaitingCorrectMessageNext)
+        {
+            isWaitingCorrectMessageNext = false;
+            isConclusionPhase = true;
+            conclusionStep = 0;
+
+            if (systemBlockText != null)
+                systemBlockText.text = conclusionLines[0];
+
+            return;
+        }
+        // ======================================
+        
         if (isConclusionPhase)
         {
             conclusionStep++;
@@ -152,6 +169,10 @@ public class Tutorial2_Manager : MonoBehaviour
                 {
                     TutorialCarouselManager.Instance.UnlockNextPage(2);
                 }
+                // ======================================
+                // AI 防暴雷：玩家已完成閒置資產教學
+                AIProgress.SetStoryStep("case2_idle_asset_completed");
+                // ======================================
             }
             return;
         }
@@ -231,25 +252,28 @@ public class Tutorial2_Manager : MonoBehaviour
             // ⭐【此為 Tutorial 2 答對 - 高低資訊回饋內容】
             if (GameData.IsHighInfo)
             {
-                if (systemBlockText != null) 
+                if (systemBlockText != null)
                     systemBlockText.text = "沒錯！即使原持有人暫時不需要，資產的剩餘使用價值依然存在，這就是形成『閒置資產』的重要基礎。";
             }
             else
             {
-                if (systemBlockText != null) 
+                if (systemBlockText != null)
                     systemBlockText.text = "沒錯呦！";
             }
         }
 
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(3f);
 
         isConclusionPhase = true;
         conclusionStep = 0;
 
         if (systemBlockPanel != null)
         {
-            if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
-            if (systemBlockText != null) systemBlockText.text = conclusionLines[0];
+            if (systemBlockNextBtn != null)
+                systemBlockNextBtn.interactable = true;
+
+            if (systemBlockText != null)
+                systemBlockText.text = conclusionLines[0];
         }
     }
 

@@ -91,6 +91,11 @@ public class BellSceneIntro : MonoBehaviour
 
     private void Start()
     {
+        // ======================================
+        // AI 防暴雷：玩家目前剛進入 Case 2
+        AIProgress.SetStoryStep("case2_intro");
+        // ======================================
+
         if (playerNameText != null)
         {
             playerNameText.text = GameData.PlayerName;

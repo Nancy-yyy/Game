@@ -353,6 +353,12 @@ public class Tutorial1_Manager : MonoBehaviour
         else
         {
             Case2State.StallPhase = 1;
+            
+            // ======================================
+            // AI 防暴雷：玩家已完成所有權 vs 使用權教學
+            AIProgress.SetStoryStep("case2_ownership_usage_completed");
+            // ======================================
+            
             if (SceneTransition.Instance != null)
             {
                 SceneTransition.Instance.StartTransitionAndLoadScene("Case2_03_Stall");

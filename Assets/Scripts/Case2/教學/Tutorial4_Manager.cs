@@ -78,6 +78,9 @@ public class Tutorial4_Manager : MonoBehaviour
     private bool isPostCardsPhase = false;
     private bool isPostCluePhase = false;
     private bool isWaitingCaseQuizNext = false;
+    private bool isWaitingClueSuccessNext = false;
+    private bool isWaitingCaseCorrectExplanation = false;
+    private bool isWaitingReflectionFinish = false;
 
     private readonly string[] centerSysLines = new string[]
     {
@@ -229,6 +232,71 @@ public class Tutorial4_Manager : MonoBehaviour
 
     public void OnClickSystemBlockNext()
     {
+
+        // ======================================
+        // 手動點擊控制：玩家看完反思回饋後才返回攤位
+        // ======================================
+        if (isWaitingReflectionFinish)
+        {
+            isWaitingReflectionFinish = false;
+
+            if (SceneTransition.Instance != null)
+            {
+                SceneTransition.Instance.StartTransitionAndLoadScene("Case2_03_Stall");
+            }
+            else
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Case2_03_Stall");
+            }
+
+            return;
+        }
+        // ======================================
+
+        // ======================================
+        // 手動點擊控制：案例答對提示 → 完整解析
+        // ======================================
+        if (isWaitingCaseCorrectExplanation)
+        {
+            isWaitingCaseCorrectExplanation = false;
+
+            if (GameData.IsHighInfo)
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "沒錯喲！B 選項是由學生提供自己暫時不用的書，最符合共享經濟『利用既有閒置資產』的特徵。";
+            }
+            else
+            {
+                if (systemBlockText != null)
+                    systemBlockText.text = "三種情況都可能讓使用者取得一本書，\n但它們的資源來源與運作方式不同\n其中，B 最符合『既有閒置資產重新被利用』的特徵。";
+            }
+
+            isWaitingCaseQuizNext = true;
+            return;
+        }
+        // ======================================
+
+
+        // ======================================
+        // 手動點擊控制：找到所有線索 → 下一段說明
+        // ======================================
+        if (isWaitingClueSuccessNext)
+        {
+            isWaitingClueSuccessNext = false;
+
+            if (detectorInteractionGroup != null)
+                detectorInteractionGroup.SetActive(false);
+
+            isPostCluePhase = true;
+            postClueStep = 0;
+
+            if (systemBlockText != null)
+                systemBlockText.text = postClueSysLines[0];
+
+            return;
+        }
+        // ======================================
+
         if (isWaitingCaseQuizNext)
         {
             isWaitingCaseQuizNext = false;
@@ -470,18 +538,9 @@ public class Tutorial4_Manager : MonoBehaviour
             if (systemBlockText != null) systemBlockText.text = "找到所有線索！";
         }
 
-        yield return new WaitForSeconds(1.5f);
-
-        if (detectorInteractionGroup != null) detectorInteractionGroup.SetActive(false);
-
-        isPostCluePhase = true;
-        postClueStep = 0;
-
-        if (systemBlockPanel != null)
-        {
-            if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
-            if (systemBlockText != null) systemBlockText.text = postClueSysLines[0];
-        }
+        isWaitingClueSuccessNext = true;
+        if (systemBlockNextBtn != null)
+            systemBlockNextBtn.interactable = true;
     }
 
     public void OnSelectCase(bool isCorrect)
@@ -530,11 +589,15 @@ public class Tutorial4_Manager : MonoBehaviour
             UpdateBlockTransform(posCaseQuiz, sizeCaseQuiz);
             systemBlockPanel.SetActive(true);
             systemBlockPanel.transform.SetAsLastSibling();
-            if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = false;
-            if (systemBlockText != null) systemBlockText.text = "沒錯喲！";
+
+            if (systemBlockNextBtn != null)
+                systemBlockNextBtn.interactable = false;
+
+            if (systemBlockText != null)
+                systemBlockText.text = "沒錯喲！";
         }
 
-        yield return new WaitForSeconds(1.2f);
+        yield return new WaitForSeconds(1.0f);
 
         if (systemBlockPanel != null)
         {
@@ -542,7 +605,7 @@ public class Tutorial4_Manager : MonoBehaviour
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "【此為 Tutorial 4 案例答對高資訊回饋內容】沒錯喲！B 選項是由學生提供自己暫時不用的書，最符合共享經濟『利用既有閒置資產』的特徵。";
+                    systemBlockText.text = "B 選項是由學生提供自己暫時不用的書，最符合共享經濟『利用既有閒置資產』的特徵。";
             }
             else
             {
@@ -550,7 +613,9 @@ public class Tutorial4_Manager : MonoBehaviour
                     systemBlockText.text = "三種情況都可能讓使用者取得一本書，\n但它們的資源來源與運作方式不同\n其中，B 最符合『既有閒置資產重新被利用』的特徵。";
             }
 
-            if (systemBlockNextBtn != null) systemBlockNextBtn.interactable = true;
+            if (systemBlockNextBtn != null)
+                systemBlockNextBtn.interactable = true;
+
             isWaitingCaseQuizNext = true;
         }
     }
@@ -603,7 +668,15 @@ public class Tutorial4_Manager : MonoBehaviour
         }
 
         Case2State.StallPhase = 2;
-        StartCoroutine(WaitAndBackToStallRoutine());
+
+        // ======================================
+        // AI 防暴雷：玩家已完成共享經濟辨識教學
+        AIProgress.SetStoryStep("case2_sharing_economy_completed");
+        // ======================================
+
+        isWaitingReflectionFinish = true;
+        if (systemBlockNextBtn != null)
+            systemBlockNextBtn.interactable = true;
     }
 
     // ⭐ 關鍵字動態解析方法
@@ -622,28 +695,28 @@ public class Tutorial4_Manager : MonoBehaviour
         if (input.Contains("閒置") || input.Contains("沒用") || input.Contains("用不到") || 
             input.Contains("放著") || input.Contains("剩下") || input.Contains("空著"))
         {
-            detectedPoints.Add("『既有資產的閒置未利用狀態』");
+            detectedPoints.Add("既有資產的閒置未利用狀態");
         }
 
         // 3. 判斷使用方式（使用權/租借）
         if (input.Contains("租") || input.Contains("借") || input.Contains("使用權") || 
             input.Contains("輪流") || input.Contains("分享"))
         {
-            detectedPoints.Add("『取得使用權而非買斷』");
+            detectedPoints.Add("取得使用權而非買斷");
         }
 
         // 4. 判斷再利用與效益
         if (input.Contains("再利用") || input.Contains("省錢") || input.Contains("便宜") || 
             input.Contains("浪費") || input.Contains("循環") || input.Contains("重新"))
         {
-            detectedPoints.Add("『讓資產重新發揮剩餘價值』");
+            detectedPoints.Add("讓資產重新發揮剩餘價值");
         }
 
         // 依據命中的關鍵字數量回饋
         if (detectedPoints.Count > 0)
         {
             string pointsString = string.Join("與", detectedPoints);
-            return $"已記錄你的想法！\n你的回答精準點出了 {pointsString}，這正是共享經濟能成立的關鍵！";
+            return $"已記錄你的想法！\n你的回答提到了 {pointsString}，這正是共享經濟能成立的關鍵！";
         }
         else
         {

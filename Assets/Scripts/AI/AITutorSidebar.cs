@@ -13,6 +13,10 @@ public class AIQueryRequest
 {
     public string query;
     public string case_id;
+    // ======================================
+    // AI 防暴雷：傳送目前劇情進度
+    public string story_step;
+    // ======================================
 }
 
 [Serializable]
@@ -223,7 +227,12 @@ public class AITutorSidebar : MonoBehaviour
         AIQueryRequest reqPayload = new AIQueryRequest
         {
             query = userQuery,
-            case_id = currentCaseId
+            case_id = currentCaseId,
+
+            // ======================================
+            // AI 防暴雷：附帶目前劇情進度
+            story_step = AIProgress.CurrentStoryStep
+            // ======================================
         };
 
         string jsonString = JsonUtility.ToJson(reqPayload);

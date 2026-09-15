@@ -34,13 +34,13 @@ public class ScaleNextB_Controller : MonoBehaviour
     public GameObject cryBird;            // 哭哭小鳥_1
     public GameObject birdDialogueBox;    // Image (對話氣泡)
     public TextMeshProUGUI birdText;      // BubbleText
-    public float birdDialogueInterval = 2.5f; // 兩句對話間隔 (秒)
+    public float birdDialogueInterval = 2.0f; // 兩句對話間隔 (秒)
 
     [Header("【第六階段：命運之神系統框 (取代原本的時光倒流按鈕)】")]
     public GameObject rewindSystemPanel;  // 拖入你的系統框 Panel (預設隱藏)
     public TextMeshProUGUI rewindSystemText; // 拖入系統框上的 TMP 文字
     public Button rewindConfirmBtn;       // 拖入系統框的確定按鈕或點擊透明按鈕
-    public float delayBeforeRewindPanel = 3.0f; // 小鳥說完第二句話後等待秒數
+    public float delayBeforeRewindPanel = 2.0f; // 小鳥說完第二句話後等待秒數
 
     [TextArea(2, 4)]
     public string rewindNoticeMessage = "命運之神眷顧了你！恭喜你獲得了重新選擇的機會！這次要認真想想你的需求噢！";

@@ -84,6 +84,11 @@ public class Case1MatchingManager : MonoBehaviour
 
     private void Start()
     {
+        // ======================================
+        // AI 防暴雷：玩家進入平台媒合教學
+        AIProgress.SetStoryStep("case1_matching_started");
+        // ======================================
+
         playerDialogueUI.SetActive(true);
 
         playerNameText.text = GameData.PlayerName;
@@ -280,6 +285,8 @@ public class Case1MatchingManager : MonoBehaviour
 
                 systemAnalysisPanel.SetActive(true);
             }
+
+
         }
         else
         {
@@ -372,6 +379,11 @@ public class Case1MatchingManager : MonoBehaviour
 
     public void ChooseAnswerB()
     {
+        // ======================================
+        // AI 防暴雷：玩家已完成平台媒合與供給判斷
+        AIProgress.SetStoryStep("case1_supply_completed");
+        // ======================================
+
         if (correctAudio != null)
         {
             correctAudio.Play();
@@ -389,6 +401,7 @@ public class Case1MatchingManager : MonoBehaviour
         {
             supplyAnalysisPanel.SetActive(true);
         }
+
     }
 
     public void ChooseAnswerC()
@@ -479,6 +492,11 @@ public class Case1MatchingManager : MonoBehaviour
 
         if (GameData.FeedbackMode == FeedbackMode.Simple)
         {
+            // ======================================
+            // AI 防暴雷：玩家已完成 Case 1 媒合與永續總結
+            AIProgress.SetStoryStep("case1_summary_completed");
+            // ======================================
+            
             SceneManager.LoadScene("Case1Travel");
         }
         else
@@ -496,6 +514,12 @@ public class Case1MatchingManager : MonoBehaviour
     public void CloseCase1SummaryMessage()
     {
         case1SummaryMessagePanel.SetActive(false);
+
+        // ======================================
+        // AI 防暴雷：玩家已完成 Case 1 媒合與永續總結
+        AIProgress.SetStoryStep("case1_summary_completed");
+        // ======================================
+
         SceneManager.LoadScene("Case1Travel");
     }
 }

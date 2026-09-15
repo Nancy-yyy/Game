@@ -115,14 +115,30 @@ public class Case2_StallManager : MonoBehaviour
         if (Case2State.StallPhase == 1)
         {
             activeDialogues = phase1_Dialogues;
+
+            // ======================================
+            // AI 防暴雷：玩家已進入學長登場階段
+            AIProgress.SetStoryStep("case2_senior_revealed");
+            // ======================================
+
         }
         else if (Case2State.StallPhase == 2)
         {
             activeDialogues = phase2_Dialogues;
+
+            // ======================================
+            // AI 防暴雷：玩家已進入共享平台揭露階段
+            AIProgress.SetStoryStep("case2_platform_revealed");
+            // ======================================
         }
         else if (Case2State.StallPhase == 3)
         {
             activeDialogues = phase3_Dialogues;
+
+            // ======================================
+            // AI 防暴雷：玩家已完成 Case 2 天平活動
+            AIProgress.SetStoryStep("case2_scale_completed");
+            // ======================================
         }
         else
         {
