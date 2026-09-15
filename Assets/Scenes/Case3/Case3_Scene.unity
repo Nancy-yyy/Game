@@ -1379,7 +1379,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7031332765439158097, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00050732103
+      value: -0.00001263462
       objectReference: {fileID: 0}
     - target: {fileID: 7611294708573949284, guid: 9a394afee7138b14cb2f83bfb30b37ba, type: 3}
       propertyPath: m_Value
@@ -2212,6 +2212,8 @@ GameObject:
   - component: {fileID: 1851538161}
   - component: {fileID: 1851538163}
   - component: {fileID: 1851538162}
+  - component: {fileID: 1851538165}
+  - component: {fileID: 1851538164}
   m_Layer: 5
   m_Name: Txt_PlayerName
   m_TagString: Untagged
@@ -2338,6 +2340,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1851538160}
   m_CullTransparentMesh: 1
+--- !u!114 &1851538164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1851538160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd7ca00aaebae4646826bbf94f8dfb10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdatePlayerNameTMP
+--- !u!114 &1851538165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1851538160}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e482564badaf3a4b9298756908435dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1889037338
 GameObject:
   m_ObjectHideFlags: 0

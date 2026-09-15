@@ -805,13 +805,21 @@ private IEnumerator ShowFinalSummaryRoutine()
     }
 
     private void StartSystemExplanation(StoryMode mode)
-    {
-        currentSysExpIndex = 0;
-        currentSystemExpLines = GetSystemExpLinesForScheme(mode);
+{
+    currentSysExpIndex = 0;
+    currentSystemExpLines = GetSystemExpLinesForScheme(mode);
 
-        if (systemExpPanel != null) systemExpPanel.SetActive(true);
-        UpdateSystemExpText();
+    // 🌟 如果沒有任何小百科內容（即低資訊組），直接略過面板開關，執行確認後的流程
+    if (currentSystemExpLines == null || currentSystemExpLines.Length == 0)
+    {
+        if (systemExpPanel != null) systemExpPanel.SetActive(false);
+        OnSystemExpConfirmClicked(); // 直接執行確認後的下一步
+        return;
     }
+
+    if (systemExpPanel != null) systemExpPanel.SetActive(true);
+    UpdateSystemExpText();
+}
 
     private void UpdateSystemExpText()
     {
@@ -891,6 +899,13 @@ private IEnumerator ShowFinalSummaryRoutine()
 
     private string[] GetSystemExpLinesForScheme(StoryMode mode)
     {
+
+        // 若不是高資訊組，直接回傳空陣列，不顯示任何系統小百科
+        if (!GameData.IsHighInfo)
+        {
+            return new string[0];
+        }
+        
         if (mode == StoryMode.SchemeA)
         {
             return new string[]
