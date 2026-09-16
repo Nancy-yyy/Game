@@ -5798,7 +5798,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u3010\u8ACB\u5B8C\u6210\u4E09\u500B\u586B\u7A7A\u3011"
+  m_text: "\u6839\u64DA\u525B\u624D\u7684\u60C5\u5883\n\u3010\u8ACB\u5B8C\u6210\u4E09\u500B\u586B\u7A7A\u3011"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
   m_sharedMaterial: {fileID: -1617542280229718651, guid: c26a6ac370fd6fe48820b3393e669880, type: 2}
@@ -13282,7 +13282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1625553305
 RectTransform:
   m_ObjectHideFlags: 0
