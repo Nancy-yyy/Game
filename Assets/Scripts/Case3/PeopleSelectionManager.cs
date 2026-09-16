@@ -41,6 +41,10 @@ public class PeopleSelectionManager : MonoBehaviour
     public CanvasGroup searchResultCanvasGroup;
     public CanvasGroup frameCanvasGroup;
 
+    [Header("=== 搜尋完成提示面板 ===")]
+    public GameObject platformFoundPanel;         // 拖入提示面板 (Panel)
+    public Button platformFoundConfirmButton;     // 拖入提示面板上的確認按鈕 (Button)
+
     [Header("=== 縮時演練畫面模組 ===")]
     public GameObject timelapsePanel;
     public CanvasGroup timelapseCanvasGroup;
@@ -78,7 +82,11 @@ public class PeopleSelectionManager : MonoBehaviour
 
     public GameObject birdDialogBox;
     public TextMeshProUGUI birdDialogText;
-    public Button backStepButton;
+   [Header("=== 返回與繼續按鈕 ===")]
+    public Button backStepButton;        // 原有的重新選擇按鈕
+    public Button continueNextButton;    // 🌟 新增：拖入【繼續前進】按鈕
+// 🌟 管理目前輪播中還沒玩過的空間索引 (0: 方案A, 1: 方案C, 2: 方案B)
+    private List<int> availableCardIndices = new List<int>() { 0, 1, 2 };
 
     [Header("=== 全螢幕錯誤提示面板 ===")]
     public GameObject wrongHintBackdrop;
@@ -247,7 +255,20 @@ private IEnumerator ShowFinalSummaryRoutine()
     }
 
     void Start()
-    {
+    {   
+        if (availableCardIndices == null || availableCardIndices.Count == 0)
+            {
+                availableCardIndices = new List<int>() { 0, 1, 2 };
+            }
+
+        if (continueNextButton != null)
+        {
+            // 先移除所有舊監聽，避免重複綁定
+            continueNextButton.onClick.RemoveAllListeners();
+            continueNextButton.onClick.AddListener(OnClickContinueNext);
+        }
+
+        if (platformFoundPanel != null) platformFoundPanel.SetActive(false);
         GameData.StartCase3Timer();// 🌟 啟動 Case 3 計時
         CloseAllPanels();
 
@@ -466,6 +487,7 @@ private IEnumerator ShowFinalSummaryRoutine()
     {
         if (finishButton != null) finishButton.interactable = false;
 
+        // 1. 抽屜往下滑動收起
         if (conditionDrawer != null)
         {
             RectTransform drawerRect = conditionDrawer.GetComponent<RectTransform>();
@@ -493,6 +515,32 @@ private IEnumerator ShowFinalSummaryRoutine()
 
         yield return new WaitForSeconds(0.2f);
 
+        // 2. 彈出【容身之地】篩選結果提示面板
+        if (platformFoundPanel != null)
+        {
+            platformFoundPanel.SetActive(true);
+
+            bool isConfirmed = false;
+            if (platformFoundConfirmButton != null)
+            {
+                platformFoundConfirmButton.onClick.RemoveAllListeners();
+                platformFoundConfirmButton.onClick.AddListener(() => isConfirmed = true);
+            }
+            else
+            {
+                // 若沒有按鈕，預設顯示 2 秒後自動前進
+                yield return new WaitForSeconds(2.0f);
+                isConfirmed = true;
+            }
+
+            // 等待玩家點擊按鈕
+            yield return new WaitUntil(() => isConfirmed);
+
+            platformFoundPanel.SetActive(false);
+            yield return new WaitForSeconds(0.2f);
+        }
+
+        // 3. 準備輪播並淡入三張卡片
         currentCardIndex = 0;
         UpdateCardDisplay();
 
@@ -513,73 +561,58 @@ private IEnumerator ShowFinalSummaryRoutine()
             }
         }
     }
-    private IEnumerator ShowSummaryWithAnimationRoutine()
-{
-    // 1. 先換成 2 個勾的狀態並打開面板
-    if (summaryTaskImage != null && twoChecksSprite != null)
-    {
-        summaryTaskImage.sprite = twoChecksSprite;
-    }
-    case3SummaryPanel.SetActive(true);
+    
 
-    // 2. 停留 0.6 秒讓玩家看到原本只有兩勾
-    yield return new WaitForSeconds(0.6f);
-
-    // 3. 瞬間換成 3 個勾，並播放通關音效！
-    if (summaryTaskImage != null && threeChecksSprite != null)
+   private void ShowPrevCard()
     {
-        summaryTaskImage.sprite = threeChecksSprite;
-    }
-
-    if (AudioManager.Instance != null)
-    {
-        AudioManager.Instance.PlayCorrect(); // 播放蓋章/通關叮咚聲
-    }
-}
-
-    private void ShowPrevCard()
-    {
-        if (cardSprites == null || cardSprites.Count == 0) return;
+        if (availableCardIndices.Count == 0) return;
         currentCardIndex--;
-        if (currentCardIndex < 0) currentCardIndex = cardSprites.Count - 1;
+        if (currentCardIndex < 0) currentCardIndex = availableCardIndices.Count - 1;
         UpdateCardDisplay();
     }
 
     private void ShowNextCard()
     {
-        if (cardSprites == null || cardSprites.Count == 0) return;
+        if (availableCardIndices.Count == 0) return;
         currentCardIndex++;
-        if (currentCardIndex >= cardSprites.Count) currentCardIndex = 0;
+        if (currentCardIndex >= availableCardIndices.Count) currentCardIndex = 0;
         UpdateCardDisplay();
     }
 
     private void UpdateCardDisplay()
     {
-        if (cardDisplayImage != null && cardSprites != null && cardSprites.Count > currentCardIndex)
+        if (availableCardIndices.Count == 0) return;
+
+        // 防呆：避免目前索引超出剩餘卡片長度
+        if (currentCardIndex >= availableCardIndices.Count) currentCardIndex = 0;
+
+        // 取得真正對應的方案編號 (0: A, 1: C, 2: B)
+        int actualSchemeIndex = availableCardIndices[currentCardIndex];
+
+        if (cardDisplayImage != null && cardSprites != null && cardSprites.Count > actualSchemeIndex)
         {
-            cardDisplayImage.sprite = cardSprites[currentCardIndex];
+            cardDisplayImage.sprite = cardSprites[actualSchemeIndex];
         }
     }
-
     private void OnBookingSelected()
     {
-        switch (currentCardIndex)
+        if (availableCardIndices.Count == 0) return;
+
+        int actualSchemeIndex = availableCardIndices[currentCardIndex];
+
+        switch (actualSchemeIndex)
         {
             case 0:
                 currentStoryMode = StoryMode.SchemeA;
-                GameData.Case3_Decision = "方案A_共享工作室"; // 🌟 記錄決策
+                GameData.Case3_Decision = "方案A_共享工作室";
                 break;
             case 1:
-                currentStoryMode = StoryMode.SchemeC_PreGame; 
-                GameData.Case3_Decision = "方案C_社區活動中心"; // 🌟 記錄決策
+                currentStoryMode = StoryMode.SchemeC_PreGame;
+                GameData.Case3_Decision = "方案C_社區活動中心";
                 break;
             case 2:
-                currentStoryMode = StoryMode.SchemeB_PreGame; 
-                GameData.Case3_Decision = "方案B_補習班教室";   // 🌟 記錄決策
-                break;
-            default:
-                currentStoryMode = StoryMode.SchemeA;
-                GameData.Case3_Decision = "方案A_共享工作室";
+                currentStoryMode = StoryMode.SchemeB_PreGame;
+                GameData.Case3_Decision = "方案B_補習班教室";
                 break;
         }
 
@@ -855,7 +888,6 @@ private IEnumerator ShowFinalSummaryRoutine()
     {
         if (systemExpPanel != null) systemExpPanel.SetActive(false);
 
-        // 🌟 修正這裡：十題問答後的總結解析看完，啟動任務四動態進度板
         if (currentStoryMode == StoryMode.FinalSummaryStory)
         {
             Debug.Log("【Case 3 結尾】總結解析看完，啟動任務四進度板動態打勾！");
@@ -865,35 +897,50 @@ private IEnumerator ShowFinalSummaryRoutine()
             }
             else
             {
-                // 若未指定面板則直接進入影片
                 UnityEngine.SceneManagement.SceneManager.LoadScene("Ending_VideoScene");
             }
             return;
         }
 
-        // 記錄當前完成的是哪個空間
-        if (currentStoryMode == StoryMode.SchemeA) completedSchemeA = true;
-        else if (currentStoryMode == StoryMode.SchemeB_PostGame) completedSchemeB = true;     
-        else if (currentStoryMode == StoryMode.SchemeC_PostGame) completedSchemeC = true;     
+        // 1. 記錄完成狀態，並將該空間從輪播清單移除 (避免重複選到)
+        if (currentStoryMode == StoryMode.SchemeA)
+        {
+            completedSchemeA = true;
+            availableCardIndices.Remove(0); // 移除方案 A
+        }
+        else if (currentStoryMode == StoryMode.SchemeB_PostGame)
+        {
+            completedSchemeB = true;
+            availableCardIndices.Remove(2); // 移除方案 B
+        }
+        else if (currentStoryMode == StoryMode.SchemeC_PostGame)
+        {
+            completedSchemeC = true;
+            availableCardIndices.Remove(1); // 移除方案 C
+        }
 
-        // 檢查三個空間是否都通關了
+        // 2. 判斷流程推進
+        // 情況一：3 個空間全部玩過 -> 直接跳任務看板
         if (completedSchemeA && completedSchemeB && completedSchemeC)
         {
-            Debug.Log("【Case 3】三大空間全部通關，啟動任務進度動態打勾！");
-            
             if (case3SummaryPanel != null)
-            {
                 StartCoroutine(ShowSummaryWithAnimationRoutine());
-            }
             else
-            {
                 StartCoroutine(PlayTimelapseRoutine());
-            }
+            return;
+        }
+
+        // 情況二：只要玩過 B 或 C（有體驗過關鍵小遊戲），就同時開放【重新選擇】與【繼續前進】
+        if (completedSchemeB || completedSchemeC)
+        {
+            if (backStepButton != null) backStepButton.gameObject.SetActive(true);
+            if (continueNextButton != null) continueNextButton.gameObject.SetActive(true);
         }
         else
         {
-            // 還沒全部通關，顯示返回選單按鈕，讓玩家挑選下一個空間
+            // 情況三：只玩了方案 A -> 只能【重新選擇】回輪播
             if (backStepButton != null) backStepButton.gameObject.SetActive(true);
+            if (continueNextButton != null) continueNextButton.gameObject.SetActive(false);
         }
     }
 
@@ -1013,24 +1060,34 @@ private IEnumerator ShowFinalSummaryRoutine()
     }
 
     public void OnBackStepClicked()
-    {// 1. 關閉重新選擇按鈕與教室對話群組
+    {
+        Debug.Log("【點擊】按下重新選擇按鈕！");
+
+        // 1. 隱藏按鈕與對話框
         if (backStepButton != null) backStepButton.gameObject.SetActive(false);
+        if (continueNextButton != null) continueNextButton.gameObject.SetActive(false);
         if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
 
-        // 2. 換回預設輪播背景
-        if (backgroundImage != null && defaultBackgroundSprite != null)
+        // 2. 刷新卡片為剩餘的第一張
+        currentCardIndex = 0;
+        UpdateCardDisplay();
+
+        // 🌟 3. 關鍵修復：除了 SetActive(true)，務必把 Alpha 強制拉回 1！
+        if (frameBG != null) frameBG.SetActive(true);
+        if (frameCanvasGroup != null)
         {
-            backgroundImage.sprite = defaultBackgroundSprite;
+            frameCanvasGroup.alpha = 1f;
+            frameCanvasGroup.blocksRaycasts = true;
+            frameCanvasGroup.interactable = true;
         }
 
-        // 3. 喚醒外框與三張卡片輪播面板
-        if (frameBG != null) frameBG.SetActive(true);
         if (searchResultPanel != null) searchResultPanel.SetActive(true);
-        if (frameCanvasGroup != null) frameCanvasGroup.alpha = 1f;
-        if (searchResultCanvasGroup != null) searchResultCanvasGroup.alpha = 1f;
-
-        // 4. 刷新卡片顯示
-        UpdateCardDisplay();
+        if (searchResultCanvasGroup != null)
+        {
+            searchResultCanvasGroup.alpha = 1f;
+            searchResultCanvasGroup.blocksRaycasts = true;
+            searchResultCanvasGroup.interactable = true;
+        }
     }
 
     public void CloseWrongHint()
@@ -1041,5 +1098,79 @@ private IEnumerator ShowFinalSummaryRoutine()
     public Image backgroundImage;          // 拉入 Canvas 下的 background 物件
     public Sprite defaultBackgroundSprite; // 預設背景 (卡片輪播時的底圖)
     public Sprite classroomBackgroundSprite; // 教室背景 (對話時顯示的教室圖)
+// 🌟 點擊【繼續遊戲】按鈕
+    public void OnClickContinueNext()
+    {
+        Debug.Log("【點擊】按下繼續遊戲按鈕！");
 
+        // 1. 隱藏按鈕與對話框
+        if (backStepButton != null) backStepButton.gameObject.SetActive(false);
+        if (continueNextButton != null) continueNextButton.gameObject.SetActive(false);
+        if (classroomDialogGroup != null) classroomDialogGroup.SetActive(false);
+
+        // 2. 確保輪播不干擾
+        if (searchResultPanel != null) searchResultPanel.SetActive(false);
+        if (frameBG != null) frameBG.SetActive(false);
+
+        // 3. 呼叫任務完成看板
+        if (case3SummaryPanel != null)
+        {
+            StartCoroutine(ShowSummaryWithAnimationRoutine());
+        }
+        else
+        {
+            Debug.LogError("【錯誤】case3SummaryPanel 尚未綁定！");
+            StartCoroutine(PlayTimelapseRoutine());
+        }
+    }
+
+    private IEnumerator ShowSummaryWithAnimationRoutine()
+    {
+        Debug.Log("【看板】啟動 Case3SummaryPanel 動態展示！");
+
+        // 1. 先換成 2 個勾的狀態並打開面板
+        if (summaryTaskImage != null && twoChecksSprite != null)
+        {
+            summaryTaskImage.sprite = twoChecksSprite;
+        }
+
+        if (case3SummaryPanel != null)
+        {
+            case3SummaryPanel.SetActive(true);
+
+            // 🌟 關鍵修復：如果身上有 CanvasGroup，強制設為不透明
+            CanvasGroup cg = case3SummaryPanel.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                cg.alpha = 1f;
+                cg.blocksRaycasts = true;
+                cg.interactable = true;
+            }
+        }
+
+        // 2. 停留 0.6 秒讓玩家看到原本只有兩勾
+        yield return new WaitForSeconds(0.6f);
+
+        // 3. 瞬間換成 3 個勾，並播放通關音效
+        if (summaryTaskImage != null && threeChecksSprite != null)
+        {
+            summaryTaskImage.sprite = threeChecksSprite;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayCorrect();
+        }
+
+        // 4. 停留 2 秒讓玩家看清楚三勾成果
+        yield return new WaitForSeconds(2.0f);
+
+        // 5. 關閉看板，接著進入縮時演練影片
+        if (case3SummaryPanel != null)
+        {
+            case3SummaryPanel.SetActive(false);
+        }
+
+        StartCoroutine(PlayTimelapseRoutine());
+    }
 }
