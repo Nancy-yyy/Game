@@ -185,6 +185,13 @@ public class Case1CarManager : MonoBehaviour
 
     public void StartCarInteraction()
     {
+        // ======================================
+        // 研究紀錄：開始 C1_IDLE（閒置資源辨識）
+        // 從玩家真正可以開始作答的時間點開始計時
+        // ======================================
+        GameData.StartTask(GameData.TaskIds.C1_IDLE);
+        // ======================================
+
         birdDialogueUI.SetActive(false);
 
         fullCarImage.SetActive(false);
@@ -231,6 +238,15 @@ public class Case1CarManager : MonoBehaviour
 
     public void ClickDriverSeat()
     {
+        // ======================================
+        // 研究紀錄：C1_IDLE 作答－駕駛座（錯誤）
+        // 舊 ErrorCount 第一階段仍保留相容
+        // ======================================
+        GameData.Case1_IdleCapacityErrors++;
+        GameData.RecordAnswer("DriverSeat", false);
+        GameData.RecordFeedbackShown("C1_IDLE_WRONG_DRIVER");
+        // ======================================
+
         if (wrongAudio != null)
         {
             wrongAudio.Play();
@@ -277,6 +293,15 @@ public class Case1CarManager : MonoBehaviour
 
     public void ClickOilTank()
     {
+        // ======================================
+        // 研究紀錄：C1_IDLE 作答－油箱（錯誤）
+        // 舊 ErrorCount 第一階段仍保留相容
+        // ======================================
+        GameData.Case1_IdleCapacityErrors++;
+        GameData.RecordAnswer("OilTank", false);
+        GameData.RecordFeedbackShown("C1_IDLE_WRONG_OIL");
+        // ======================================
+
         if (wrongAudio != null)
         {
             wrongAudio.Play();
@@ -324,6 +349,15 @@ public class Case1CarManager : MonoBehaviour
 
     public void ClickTrunk()
     {
+        // ======================================
+        // 研究紀錄：C1_IDLE 作答－後車廂剩餘空間（正確）
+        // 正確答案送出後完成此研究 Task
+        // ======================================
+        GameData.RecordAnswer("TrunkRemainingSpace", true);
+        GameData.RecordFeedbackShown("C1_IDLE_CORRECT");
+        GameData.CompleteTask();
+        // ======================================
+
         interactionHintUI.SetActive(false);
 
         carInteractionPanel.SetActive(false);

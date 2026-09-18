@@ -91,6 +91,9 @@ public class BellSceneIntro : MonoBehaviour
 
     private void Start()
     {
+        // 研究紀錄：Case 2 總耗時從本場景開始計時
+        GameData.StartCase2Timer();
+
         // ======================================
         // AI 防暴雷：玩家目前剛進入 Case 2
         AIProgress.SetStoryStep("case2_intro");

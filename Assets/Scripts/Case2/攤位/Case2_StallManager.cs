@@ -279,6 +279,9 @@ public class Case2_StallManager : MonoBehaviour
         }
         else if (Case2State.StallPhase == 3)
         {
+            // Case 2 正式結束：停止 Case 2 總計時
+            GameData.StopCase2Timer();
+
             // ⭐ Case 2 圓滿完結！可在此載入大地圖或結算畫面
             Debug.Log("🎉 Case 2 劇情全數完成！");
             // LoadTargetScene("MapScene"); // 若有後續場景可填寫於此

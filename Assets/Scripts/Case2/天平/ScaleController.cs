@@ -86,6 +86,14 @@ public class ScaleController : MonoBehaviour
             confirmBtn.gameObject.SetActive(false);
         }
 
+        // 研究紀錄：C2_SCALE 橫跨天平與 B/C 支線場景。
+        // 第一次進入才開始 Task；之後從支線返回天平時不重新 StartTask。
+        if (string.IsNullOrEmpty(GameData.Case2_Scale_Choice))
+        {
+            GameData.Case2_Scale_Choice = "IN_PROGRESS";
+            GameData.StartTask(GameData.TaskIds.C2_SCALE);
+        }
+
         ResetToInitialState();
     }
 
@@ -114,6 +122,9 @@ public class ScaleController : MonoBehaviour
         switch (type)
         {
             case "A":
+                // 研究紀錄：A 為不可行方案，玩家實際拖入即視為一次錯誤嘗試
+                GameData.RecordAnswer("OPTION_A", false);
+
                 SetPlayerFace(faceCry);
                 RestoreResetButton();
                 activeScaleRoutine = StartCoroutine(RotateSmooth(MAX_TILT_ANGLE, 0.4f));
@@ -135,6 +146,9 @@ public class ScaleController : MonoBehaviour
                 break;
 
             case "D":
+                // 研究紀錄：D 為不可行方案，玩家實際拖入即視為一次錯誤嘗試
+                GameData.RecordAnswer("OPTION_D", false);
+
                 SetPlayerFace(faceCollapse);
                 RestoreResetButton();
                 activeScaleRoutine = StartCoroutine(RotateSmooth(MAX_TILT_ANGLE, 0.4f));

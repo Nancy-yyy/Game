@@ -108,6 +108,12 @@ public class ScaleNextB_Controller : MonoBehaviour
 
     public void OnConfirmBuyClicked()
     {
+        // 研究紀錄：玩家正式確認 B（二手書）後，才視為一次方案提交。
+        // B 在此情境會導致生活費歸零，因此記為錯誤嘗試；
+        // Task 不結束，之後返回天平可繼續累積同一個 C2_SCALE。
+        GameData.Case2_Scale_Choice = "B";
+        GameData.RecordAnswer("PLAN_B", false);
+
         if (bookInfoPanel != null) bookInfoPanel.SetActive(false);
         if (storyDialoguePanel != null) storyDialoguePanel.SetActive(true);
 

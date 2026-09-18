@@ -211,6 +211,9 @@ public class Case3SearchManager : MonoBehaviour
 
         if (drawerCanvasGroup != null && drawerRectTransform != null)
         {
+            // 研究紀錄：條件抽屜開始可互動時啟動 C3_FILTER
+            GameData.StartTask(GameData.TaskIds.C3_FILTER);
+
             drawerCanvasGroup.blocksRaycasts = true;
             float elapsed = 0f;
             float duration = 0.45f;

@@ -171,19 +171,19 @@ public class Tutorial4_Manager : MonoBehaviour
         if (caseA_Btn != null)
         {
             caseA_Btn.onClick.RemoveAllListeners();
-            caseA_Btn.onClick.AddListener(() => OnSelectCase(false));
+            caseA_Btn.onClick.AddListener(() => OnSelectCase("A", false));
             caseA_Btn.interactable = true;
         }
         if (caseB_Btn != null)
         {
             caseB_Btn.onClick.RemoveAllListeners();
-            caseB_Btn.onClick.AddListener(() => OnSelectCase(true));
+            caseB_Btn.onClick.AddListener(() => OnSelectCase("B", true));
             caseB_Btn.interactable = true;
         }
         if (caseC_Btn != null)
         {
             caseC_Btn.onClick.RemoveAllListeners();
-            caseC_Btn.onClick.AddListener(() => OnSelectCase(false));
+            caseC_Btn.onClick.AddListener(() => OnSelectCase("C", false));
             caseC_Btn.interactable = true;
         }
 
@@ -300,6 +300,11 @@ public class Tutorial4_Manager : MonoBehaviour
         if (isWaitingCaseQuizNext)
         {
             isWaitingCaseQuizNext = false;
+
+            // C2_DETECTOR 到此正式完成，接著進入開放式反思
+            GameData.CompleteTask();
+            GameData.StartTask(GameData.TaskIds.C2_REFLECTION);
+
             if (caseQuizGroup != null) caseQuizGroup.SetActive(false);
             if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
 
@@ -342,6 +347,9 @@ public class Tutorial4_Manager : MonoBehaviour
 
                 if (detectorInteractionGroup != null)
                 {
+                    // 研究紀錄：Tutorial 4 偵測器任務從正式互動開始
+                    GameData.StartTask(GameData.TaskIds.C2_DETECTOR);
+
                     detectorInteractionGroup.SetActive(true);
                     StartCoroutine(SlideInDetectorHint());
                 }
@@ -490,6 +498,9 @@ public class Tutorial4_Manager : MonoBehaviour
             // ⭐ 累計 Tutorial 4 線索錯誤次數
             GameData.Case2_Tutorial4_ClueErrors++;
 
+            // 研究紀錄：線索組合錯誤時實際顯示的回饋
+            GameData.RecordFeedbackShown("C2_DETECTOR_CLUE_WRONG");
+
             if (warningBoxPanel != null)
             {
                 warningBoxPanel.SetActive(true);
@@ -543,8 +554,11 @@ public class Tutorial4_Manager : MonoBehaviour
             systemBlockNextBtn.interactable = true;
     }
 
-    public void OnSelectCase(bool isCorrect)
+    public void OnSelectCase(string selectedOption, bool isCorrect)
     {
+        // 研究紀錄：正式案例判斷作答
+        GameData.RecordAnswer(selectedOption, isCorrect);
+
         if (isCorrect)
         {
             PlaySFX(correctSFX);
@@ -561,6 +575,9 @@ public class Tutorial4_Manager : MonoBehaviour
 
             // ⭐ 累計 Tutorial 4 案例選擇錯誤次數
             GameData.Case2_Tutorial4_CaseErrors++;
+
+            // 研究紀錄：案例判斷錯誤回饋
+            GameData.RecordFeedbackShown("C2_DETECTOR_CASE_WRONG");
 
             if (warningBoxPanel != null)
             {
@@ -613,6 +630,9 @@ public class Tutorial4_Manager : MonoBehaviour
                     systemBlockText.text = "三種情況都可能讓使用者取得一本書，\n但它們的資源來源與運作方式不同\n其中，B 最符合『既有閒置資產重新被利用』的特徵。";
             }
 
+            // 研究紀錄：正確案例的 High / Low 回饋已顯示
+            GameData.RecordFeedbackShown("C2_DETECTOR_CASE_CORRECT");
+
             if (systemBlockNextBtn != null)
                 systemBlockNextBtn.interactable = true;
 
@@ -640,9 +660,6 @@ public class Tutorial4_Manager : MonoBehaviour
 
         PlaySFX(correctSFX);
 
-        // 將自主反思字串寫入 GameData
-        GameData.Case2_Tutorial4_Reflection = userInput;
-
         if (systemBlockPanel != null && systemBlockRect != null)
         {
             UpdateBlockTransform(posCaseQuiz, sizeCaseQuiz);
@@ -666,6 +683,15 @@ public class Tutorial4_Manager : MonoBehaviour
                 }
             }
         }
+
+        // 研究紀錄：反思回饋已實際顯示
+        if (systemBlockPanel != null && systemBlockPanel.activeSelf)
+        {
+            GameData.RecordFeedbackShown("C2_REFLECTION_FEEDBACK");
+        }
+
+        // 寫入 Reflection_Results.csv；RecordReflection 會自動 CompleteTask()
+        GameData.RecordReflection(GameData.TaskIds.C2_REFLECTION, userInput);
 
         Case2State.StallPhase = 2;
 

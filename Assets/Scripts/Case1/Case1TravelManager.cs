@@ -40,6 +40,12 @@ public class Case1TravelManager : MonoBehaviour
     
     public void EnterCase2()
     {
+        // ======================================
+        // 研究紀錄：Case 1 結束，停止總耗時計時
+        // ======================================
+        GameData.StopCase1Timer();
+        // ======================================
+
         SceneManager.LoadScene("Case2_01_ClassroomMove");
     }
 }

@@ -47,6 +47,9 @@ public class TrustMiniGameManager : MonoBehaviour
 
     public void StartMiniGame()
     {
+        // 研究紀錄：信任機制小遊戲正式開始
+        GameData.StartTask(GameData.TaskIds.C3_TRUST);
+
         if (unlockGamePanel != null) unlockGamePanel.SetActive(true);
         if (unlockSuccessPanel != null) unlockSuccessPanel.SetActive(false);
         ResetAllCards();
@@ -134,6 +137,15 @@ public class TrustMiniGameManager : MonoBehaviour
             isCorrect = true;
         }
 
+        // 研究紀錄：四格全部填滿才算一次正式作答
+        string submittedAnswer =
+            GetTrustCardCode(slotsOccupied[0]) + ">" +
+            GetTrustCardCode(slotsOccupied[1]) + ">" +
+            GetTrustCardCode(slotsOccupied[2]) + ">" +
+            GetTrustCardCode(slotsOccupied[3]);
+
+        GameData.RecordAnswer(submittedAnswer, isCorrect);
+
         if (isCorrect)
         {
             // 答對 ➔ 進入解鎖成功
@@ -150,6 +162,18 @@ public class TrustMiniGameManager : MonoBehaviour
                 wrongPromptBackdrop.transform.SetAsLastSibling();
                 wrongPromptBackdrop.SetActive(true);
             }
+        }
+    }
+
+    private string GetTrustCardCode(int cardType)
+    {
+        switch (cardType)
+        {
+            case 0: return "IDENTITY";
+            case 1: return "DEPOSIT";
+            case 2: return "DAMAGE";
+            case 3: return "PREPAYMENT";
+            default: return "UNKNOWN";
         }
     }
 

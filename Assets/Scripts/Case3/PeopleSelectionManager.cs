@@ -269,7 +269,7 @@ private IEnumerator ShowFinalSummaryRoutine()
         }
 
         if (platformFoundPanel != null) platformFoundPanel.SetActive(false);
-        GameData.StartCase3Timer();// 🌟 啟動 Case 3 計時
+        // Case 3 計時已在 LineChatManagerNew 啟動，這裡不重新計時
         CloseAllPanels();
 
         // 任務進度板初始化（預設隱藏）
@@ -319,28 +319,68 @@ private IEnumerator ShowFinalSummaryRoutine()
 
         // 綁定條件選項
         if (tabPeopleButton != null) tabPeopleButton.onClick.AddListener(() => OpenPanel(peopleSelectionPanel));
-        if (singleButton != null) singleButton.onClick.AddListener(() => OnOptionClicked(false, 1, ""));
-        if (largeButton != null) largeButton.onClick.AddListener(() => OnOptionClicked(false, 1, ""));
+        if (singleButton != null) singleButton.onClick.AddListener(() => OnOptionClicked(false, 1, "PEOPLE_SINGLE"));
+        if (largeButton != null) largeButton.onClick.AddListener(() => OnOptionClicked(false, 1, "PEOPLE_LARGE"));
         if (fourButton != null) fourButton.onClick.AddListener(() => OnOptionClicked(true, 1, "4人小組討論"));
 
         if (tabTimeButton != null) tabTimeButton.onClick.AddListener(() => OpenPanel(timeSelectionPanel));
         if (timeWrongButtons != null)
-            foreach (var btn in timeWrongButtons) if (btn != null) btn.onClick.AddListener(() => OnOptionClicked(false, 2, ""));
+        {
+            for (int i = 0; i < timeWrongButtons.Length; i++)
+            {
+                Button btn = timeWrongButtons[i];
+                if (btn == null) continue;
+
+                int capturedIndex = i;
+                btn.onClick.AddListener(() =>
+                    OnOptionClicked(false, 2, "TIME_WRONG_" + (capturedIndex + 1)));
+            }
+        }
         if (timeCorrectButton != null) timeCorrectButton.onClick.AddListener(() => OnOptionClicked(true, 2, "22:00-1:00"));
 
         if (tabBudgetButton != null) tabBudgetButton.onClick.AddListener(() => OpenPanel(budgetSelectionPanel));
         if (budgetWrongButtons != null)
-            foreach (var btn in budgetWrongButtons) if (btn != null) btn.onClick.AddListener(() => OnOptionClicked(false, 3, ""));
+        {
+            for (int i = 0; i < budgetWrongButtons.Length; i++)
+            {
+                Button btn = budgetWrongButtons[i];
+                if (btn == null) continue;
+
+                int capturedIndex = i;
+                btn.onClick.AddListener(() =>
+                    OnOptionClicked(false, 3, "BUDGET_WRONG_" + (capturedIndex + 1)));
+            }
+        }
         if (budgetCorrectButton != null) budgetCorrectButton.onClick.AddListener(() => OnOptionClicked(true, 3, "總預算<=600"));
 
         if (tabEquipmentButton != null) tabEquipmentButton.onClick.AddListener(() => OpenPanel(equipmentSelectionPanel));
         if (equipmentWrongButtons != null)
-            foreach (var btn in equipmentWrongButtons) if (btn != null) btn.onClick.AddListener(() => OnOptionClicked(false, 4, ""));
+        {
+            for (int i = 0; i < equipmentWrongButtons.Length; i++)
+            {
+                Button btn = equipmentWrongButtons[i];
+                if (btn == null) continue;
+
+                int capturedIndex = i;
+                btn.onClick.AddListener(() =>
+                    OnOptionClicked(false, 4, "EQUIPMENT_WRONG_" + (capturedIndex + 1)));
+            }
+        }
         if (equipmentCorrectButton != null) equipmentCorrectButton.onClick.AddListener(() => OnOptionClicked(true, 4, "白板與插座"));
 
         if (tabSoundproofButton != null) tabSoundproofButton.onClick.AddListener(() => OpenPanel(soundproofSelectionPanel));
         if (soundproofWrongButtons != null)
-            foreach (var btn in soundproofWrongButtons) if (btn != null) btn.onClick.AddListener(() => OnOptionClicked(false, 5, ""));
+        {
+            for (int i = 0; i < soundproofWrongButtons.Length; i++)
+            {
+                Button btn = soundproofWrongButtons[i];
+                if (btn == null) continue;
+
+                int capturedIndex = i;
+                btn.onClick.AddListener(() =>
+                    OnOptionClicked(false, 5, "SOUNDPROOF_WRONG_" + (capturedIndex + 1)));
+            }
+        }
         if (soundproofCorrectButton != null) soundproofCorrectButton.onClick.AddListener(() => OnOptionClicked(true, 5, "可交談"));
 
         if (tabDistanceButton != null) tabDistanceButton.onClick.AddListener(() => OpenPanel(distanceSelectionPanel));
@@ -455,7 +495,14 @@ private IEnumerator ShowFinalSummaryRoutine()
         }
         else
         {
-            // 🌟 記錄條件篩選錯誤次數
+            // 研究紀錄：錯誤條件選擇視為一次 C3_FILTER 錯誤嘗試
+            string wrongValue =
+                "SLOT" + slotIndex + ":" +
+                (string.IsNullOrEmpty(fillText) ? "UnknownOption" : fillText);
+
+            GameData.RecordAnswer(wrongValue, false);
+
+            // 🌟 保留舊版條件篩選錯誤次數
             GameData.Case3_FilterErrors++;
             
             if (AudioManager.Instance != null) AudioManager.Instance.PlayWrong();
@@ -480,6 +527,20 @@ private IEnumerator ShowFinalSummaryRoutine()
 
     public void OnClickFinishButton()
     {
+        // 研究紀錄：將 8 個已完成條件合併成 C3_FILTER 最終答案
+        string finalFilterAnswer =
+            "P=" + (slot1Text != null ? slot1Text.text : "") +
+            "|T=" + (slot2Text != null ? slot2Text.text : "") +
+            "|B=" + (slot3Text != null ? slot3Text.text : "") +
+            "|E=" + (slot4Text != null ? slot4Text.text : "") +
+            "|S=" + (slot5Text != null ? slot5Text.text : "") +
+            "|D=" + (slot6Text != null ? slot6Text.text : "") +
+            "|F=" + (slot7Text != null ? slot7Text.text : "") +
+            "|A=" + (slot8Text != null ? slot8Text.text : "");
+
+        GameData.RecordAnswer(finalFilterAnswer, true);
+        GameData.CompleteTask();
+
         StartCoroutine(TransitionToResultCardRoutine());
     }
 
@@ -605,6 +666,10 @@ private IEnumerator ShowFinalSummaryRoutine()
             case 0:
                 currentStoryMode = StoryMode.SchemeA;
                 GameData.Case3_Decision = "方案A_共享工作室";
+
+                // 研究紀錄：方案 A 對應時間／預算資源限制情境。
+                // 現行遊戲是劇情體驗，沒有額外作答，所以只記 Task 暴露與耗時。
+                GameData.StartTask(GameData.TaskIds.C3_SCHEDULE);
                 break;
             case 1:
                 currentStoryMode = StoryMode.SchemeC_PreGame;
@@ -851,6 +916,24 @@ private IEnumerator ShowFinalSummaryRoutine()
     }
 
     if (systemExpPanel != null) systemExpPanel.SetActive(true);
+
+    // 研究紀錄：只有高資訊組真正顯示深度解析時才記錄 Feedback exposure
+    if (GameData.IsHighInfo)
+    {
+        if (mode == StoryMode.SchemeA)
+        {
+            GameData.RecordFeedbackShown("C3_SCHEDULE_HIGH_INFO");
+        }
+        else if (mode == StoryMode.SchemeB_PostGame)
+        {
+            GameData.RecordFeedbackShown("C3_TRUST_HIGH_INFO");
+        }
+        else if (mode == StoryMode.SchemeC_PostGame)
+        {
+            GameData.RecordFeedbackShown("C3_RULES_HIGH_INFO");
+        }
+    }
+
     UpdateSystemExpText();
 }
 
@@ -905,16 +988,27 @@ private IEnumerator ShowFinalSummaryRoutine()
         // 1. 記錄完成狀態，並將該空間從輪播清單移除 (避免重複選到)
         if (currentStoryMode == StoryMode.SchemeA)
         {
+            // C3_SCHEDULE 的劇情／解析到此完成
+            GameData.CompleteTask();
+
             completedSchemeA = true;
             availableCardIndices.Remove(0); // 移除方案 A
         }
         else if (currentStoryMode == StoryMode.SchemeB_PostGame)
         {
+            // C3_TRUST 到此完成：
+            // 四格信任機制作答 + 後續劇情 +（高資訊組）深度解析皆已結束
+            GameData.CompleteTask();
+
             completedSchemeB = true;
             availableCardIndices.Remove(2); // 移除方案 B
         }
         else if (currentStoryMode == StoryMode.SchemeC_PostGame)
         {
+            // C3_RULES 到此完成：
+            // 四格使用規範作答 + 後續劇情 +（高資訊組）深度解析皆已結束
+            GameData.CompleteTask();
+
             completedSchemeC = true;
             availableCardIndices.Remove(1); // 移除方案 C
         }

@@ -225,7 +225,26 @@ public class Tutorial1_Manager : MonoBehaviour
 
         if (questionPanel != null) questionPanel.SetActive(true);
         currentQuestionIndex = 0;
+
+        // 研究紀錄：Tutorial 1 共四題，每題視為獨立 Task
+        GameData.StartTask(GetCurrentRightTaskId());
+
         LoadCurrentQuestion();
+    }
+
+    private string GetCurrentRightTaskId()
+    {
+        switch (currentQuestionIndex)
+        {
+            case 0:
+                return GameData.TaskIds.C2_RIGHT_1;
+            case 1:
+                return GameData.TaskIds.C2_RIGHT_2;
+            case 2:
+                return GameData.TaskIds.C2_RIGHT_3;
+            default:
+                return GameData.TaskIds.C2_RIGHT_4;
+        }
     }
 
     private void LoadCurrentQuestion()
@@ -247,19 +266,33 @@ public class Tutorial1_Manager : MonoBehaviour
     {
         if (!isAnsweringPhase) return;
 
-        bool isCorrect = (selectedOwnership == questions[currentQuestionIndex].isOwnership);
+        bool isCorrect =
+            selectedOwnership == questions[currentQuestionIndex].isOwnership;
+
+        string answer =
+            selectedOwnership ? "Ownership" : "UsageRight";
+
+        // 研究紀錄：每次正式作答都保留
+        GameData.RecordAnswer(answer, isCorrect);
 
         if (isCorrect)
         {
             PlaySFX(correctSFX);
 
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.Length)
+            // 前三題答對後直接結束該 Task，再開下一題
+            if (currentQuestionIndex < questions.Length - 1)
             {
+                GameData.CompleteTask();
+
+                currentQuestionIndex++;
+                GameData.StartTask(GetCurrentRightTaskId());
                 LoadCurrentQuestion();
             }
             else
             {
+                // 第四題的整體正確回饋會在 FinishAllQuestions() 顯示，
+                // 因此先保留 Task，待回饋顯示後再 CompleteTask()。
+                currentQuestionIndex++;
                 FinishAllQuestions();
             }
         }
@@ -285,6 +318,13 @@ public class Tutorial1_Manager : MonoBehaviour
                     if (warningText != null)
                         warningText.text = "好像不太對歐~再想想看吧！";
                 }
+
+                // 研究紀錄：實際顯示錯誤回饋
+                GameData.RecordFeedbackShown(
+                    "C2_RIGHT_" +
+                    (currentQuestionIndex + 1) +
+                    "_WRONG"
+                );
             }
         }
     }
@@ -325,7 +365,12 @@ public class Tutorial1_Manager : MonoBehaviour
                 if (systemBlockText != null)
                     systemBlockText.text = "看來你對所有權與使用權都很了解囉！";
             }
+
+            // 研究紀錄：第四題答對後實際顯示整體正確回饋
+            GameData.RecordFeedbackShown("C2_RIGHT_4_CORRECT_SUMMARY");
         }
+
+        GameData.CompleteTask();
     }
 
     private void ShowEndingDialogueLine()

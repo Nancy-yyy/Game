@@ -150,6 +150,13 @@ public class Case1MatchingManager : MonoBehaviour
 
     public void ShowMatchingOrderPanel()
     {
+        // ======================================
+        // 研究紀錄：開始 C1_MATCH（平台媒合流程排序）
+        // 從玩家真正可以開始排列卡片時開始計時
+        // ======================================
+        GameData.StartTask(GameData.TaskIds.C1_MATCH);
+        // ======================================
+
         systemIntroPanel.SetActive(false);
         matchingOrderPanel.SetActive(true);
     }
@@ -262,8 +269,28 @@ public class Case1MatchingManager : MonoBehaviour
             selectedOrder[2] == "Match" &&
             selectedOrder[3] == "Confirm";
 
+        // ======================================
+        // 研究紀錄：保存這一次完整排列結果
+        // 例如 Supply>Search>Match>Confirm
+        // ======================================
+        string submittedOrder =
+            string.Join(">", selectedOrder);
+
+        GameData.RecordAnswer(
+            submittedOrder,
+            isCorrect
+        );
+        // ======================================
+
         if (isCorrect)
         {
+            // ======================================
+            // 研究紀錄：本次正確回饋實際呈現，完成 C1_MATCH
+            // ======================================
+            GameData.RecordFeedbackShown("C1_MATCH_CORRECT");
+            GameData.CompleteTask();
+            // ======================================
+
             if (correctAudio != null)
             {
                 correctAudio.Play();
@@ -290,6 +317,14 @@ public class Case1MatchingManager : MonoBehaviour
         }
         else
         {
+            // ======================================
+            // 研究紀錄：舊 ErrorCount 保留相容，
+            // 並記錄本次錯誤回饋實際呈現
+            // ======================================
+            GameData.Case1_MatchingOrderErrors++;
+            GameData.RecordFeedbackShown("C1_MATCH_WRONG");
+            // ======================================
+
             ShowWrongMatchingFeedback();
         }
     }
@@ -368,17 +403,39 @@ public class Case1MatchingManager : MonoBehaviour
 
     public void ShowSupplyQuestion()
     {
+        // ======================================
+        // 研究紀錄：開始 C1_SCARCITY（供需與稀缺判斷）
+        // ======================================
+        GameData.StartTask(GameData.TaskIds.C1_SCARCITY);
+        // ======================================
+
         playerSeatDialogueUI.SetActive(false);
         supplyQuestionPanel.SetActive(true);
     }
 
     public void ChooseAnswerA()
     {
+        // ======================================
+        // 研究紀錄：C1_SCARCITY 作答 A（錯誤）
+        // ======================================
+        GameData.Case1_ScarcityErrors++;
+        GameData.RecordAnswer("A", false);
+        GameData.RecordFeedbackShown("C1_SCARCITY_WRONG_A");
+        // ======================================
+
         ShowQuestionWrong();
     }
 
     public void ChooseAnswerB()
     {
+        // ======================================
+        // 研究紀錄：C1_SCARCITY 作答 B（正確）
+        // ======================================
+        GameData.RecordAnswer("B", true);
+        GameData.RecordFeedbackShown("C1_SCARCITY_CORRECT");
+        GameData.CompleteTask();
+        // ======================================
+
         // ======================================
         // AI 防暴雷：玩家已完成平台媒合與供給判斷
         AIProgress.SetStoryStep("case1_supply_completed");
@@ -406,6 +463,14 @@ public class Case1MatchingManager : MonoBehaviour
 
     public void ChooseAnswerC()
     {
+        // ======================================
+        // 研究紀錄：C1_SCARCITY 作答 C（錯誤）
+        // ======================================
+        GameData.Case1_ScarcityErrors++;
+        GameData.RecordAnswer("C", false);
+        GameData.RecordFeedbackShown("C1_SCARCITY_WRONG_C");
+        // ======================================
+
         ShowQuestionWrong();
     }
 

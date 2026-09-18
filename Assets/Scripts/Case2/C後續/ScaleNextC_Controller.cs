@@ -148,6 +148,12 @@ public class ScaleNextC_Controller : MonoBehaviour
 
     public void OnConfirmBuyClicked()
     {
+        // 研究紀錄：玩家正式確認 C（租借）方案。
+        // C2_SCALE 在方案 C 確認後即完成；理由題另列為 C2_SCALE_REASON。
+        GameData.Case2_Scale_Choice = "C";
+        GameData.RecordAnswer("PLAN_C", true);
+        GameData.CompleteTask();
+
         if (bookInfoPanel != null) bookInfoPanel.SetActive(false);
         if (contractPanel != null) contractPanel.SetActive(true);
     }
@@ -244,6 +250,10 @@ public class ScaleNextC_Controller : MonoBehaviour
         if (reasonQuizPanel != null)
         {
             ResetAllToggles();
+
+            // 研究紀錄：理由題從真正顯示、可作答時才開始計時
+            GameData.StartTask(GameData.TaskIds.C2_SCALE_REASON);
+
             reasonQuizPanel.SetActive(true);
         }
     }
@@ -255,6 +265,21 @@ public class ScaleNextC_Controller : MonoBehaviour
                          (opt3_Free != null && !opt3_Free.isOn) &&
                          (opt4_Newer != null && !opt4_Newer.isOn) &&
                          (opt5_LowestPrice != null && !opt5_LowestPrice.isOn);
+
+        // 研究紀錄：保留本次理由勾選內容。
+        System.Collections.Generic.List<string> selectedReasons =
+            new System.Collections.Generic.List<string>();
+
+        if (opt1_FourMonths != null && opt1_FourMonths.isOn) selectedReasons.Add("1");
+        if (opt2_NoNeedOwn != null && opt2_NoNeedOwn.isOn) selectedReasons.Add("2");
+        if (opt3_Free != null && opt3_Free.isOn) selectedReasons.Add("3");
+        if (opt4_Newer != null && opt4_Newer.isOn) selectedReasons.Add("4");
+        if (opt5_LowestPrice != null && opt5_LowestPrice.isOn) selectedReasons.Add("5");
+
+        string reasonAnswer =
+            "REASONS:" + string.Join("|", selectedReasons);
+
+        GameData.RecordAnswer(reasonAnswer, isCorrect);
 
         if (isCorrect)
         {
@@ -271,6 +296,9 @@ public class ScaleNextC_Controller : MonoBehaviour
         }
         else
         {
+            // 舊版摘要欄位保留：理由勾選題答錯次數
+            GameData.Case2_Scale_QuizErrors++;
+
             if (activeSysMsgRoutine != null) StopCoroutine(activeSysMsgRoutine);
             activeSysMsgRoutine = StartCoroutine(ShowSystemErrorSlideRoutine());
         }
@@ -311,7 +339,12 @@ public class ScaleNextC_Controller : MonoBehaviour
         // 5. 停留 1.8 秒讓玩家看到獲得第二個打勾
         yield return new WaitForSeconds(displayAfterCheck);
 
-        // 6. 設定狀態並切換回攤位
+        // 6. 理由題到此正式完成，再切換回攤位
+        GameData.CompleteTask();
+
+        // 確保摘要欄位保留最終方案
+        GameData.Case2_Scale_Choice = "C";
+
         Case2State.StallPhase = 3;
 
         if (sceneTransition != null)

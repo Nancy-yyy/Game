@@ -66,6 +66,9 @@ public class LineChatManagerNew : MonoBehaviour
 
     void Start()
     {
+        // 研究紀錄：Case 3 從群組聊天場景開始計總耗時
+        GameData.StartCase3Timer();
+
         foreach (GameObject img in blueMessages)
         {
             if (img != null) img.SetActive(false);

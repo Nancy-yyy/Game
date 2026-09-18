@@ -9,6 +9,9 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
+	"last_search.66F56946" = "GameData.InitializeExperiment()"
+	"OpenInspectorPreview.66F56946" = "0"
+	"currentGroup.66F56946" = "all"
 }
 providers = {
 	asset = {
@@ -70,6 +73,7 @@ providers = {
 objectSelectors = {
 }
 recentSearches = [
+	"GameData.InitializeExperiment()"
 ]
 searchItemFavorites = [
 ]

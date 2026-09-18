@@ -27,6 +27,12 @@ public class Case1IntroManager : MonoBehaviour
 
     private void Start()
     {
+        // ======================================
+        // 研究紀錄：Case 1 總耗時從本場景開始計時
+        // ======================================
+        GameData.StartCase1Timer();
+        // ======================================
+
         birdDialogueUI.SetActive(true);
         playerDialogueUI.SetActive(false);
 

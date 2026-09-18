@@ -96,19 +96,19 @@ public class Tutorial3_Manager : MonoBehaviour
         if (scenarioOptA_Btn != null)
         {
             scenarioOptA_Btn.onClick.RemoveAllListeners();
-            scenarioOptA_Btn.onClick.AddListener(() => OnSelectScenario(false));
+            scenarioOptA_Btn.onClick.AddListener(() => OnSelectScenario("A", false));
             scenarioOptA_Btn.interactable = true;
         }
         if (scenarioOptB_Btn != null)
         {
             scenarioOptB_Btn.onClick.RemoveAllListeners();
-            scenarioOptB_Btn.onClick.AddListener(() => OnSelectScenario(true));
+            scenarioOptB_Btn.onClick.AddListener(() => OnSelectScenario("B", true));
             scenarioOptB_Btn.interactable = true;
         }
         if (scenarioOptC_Btn != null)
         {
             scenarioOptC_Btn.onClick.RemoveAllListeners();
-            scenarioOptC_Btn.onClick.AddListener(() => OnSelectScenario(false));
+            scenarioOptC_Btn.onClick.AddListener(() => OnSelectScenario("C", false));
             scenarioOptC_Btn.interactable = true;
         }
 
@@ -172,6 +172,10 @@ public class Tutorial3_Manager : MonoBehaviour
             
             if (comicDragDropGroup != null) comicDragDropGroup.SetActive(true);
             ShuffleCardsToAnchors();
+
+            // 研究紀錄：正式進入四格漫畫排序題
+            GameData.StartTask(GameData.TaskIds.C2_REUSE_ORDER);
+
             return;
         }
 
@@ -184,6 +188,9 @@ public class Tutorial3_Manager : MonoBehaviour
         {
             if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
             if (scenarioQuizGroup != null) scenarioQuizGroup.SetActive(true);
+
+            // 研究紀錄：正式進入資產再利用情境題
+            GameData.StartTask(GameData.TaskIds.C2_REUSE_CASE);
         }
     }
 
@@ -228,6 +235,25 @@ public class Tutorial3_Manager : MonoBehaviour
         }
     }
 
+    private string GetCurrentComicOrderAnswer()
+    {
+        List<string> order = new List<string>();
+
+        for (int i = 0; i < dropSlots.Length; i++)
+        {
+            if (dropSlots[i] != null && dropSlots[i].placedCard != null)
+            {
+                order.Add(dropSlots[i].placedCard.cardId.ToString());
+            }
+            else
+            {
+                order.Add("");
+            }
+        }
+
+        return string.Join(">", order);
+    }
+
     public void CheckAllSlotsPlaced()
     {
         if (dropSlots == null || dropSlots.Length < 4) return;
@@ -248,6 +274,9 @@ public class Tutorial3_Manager : MonoBehaviour
                 isAllCorrect = false;
             }
         }
+
+        string submittedOrder = GetCurrentComicOrderAnswer();
+        GameData.RecordAnswer(submittedOrder, isAllCorrect);
 
         if (isAllCorrect)
         {
@@ -277,6 +306,8 @@ public class Tutorial3_Manager : MonoBehaviour
                     if (warningText != null)
                         warningText.text = "順序好像不太對歐，再試一次吧！";
                 }
+
+                GameData.RecordFeedbackShown("C2_REUSE_ORDER_WRONG");
             }
         }
     }
@@ -318,15 +349,21 @@ public class Tutorial3_Manager : MonoBehaviour
                 if (systemBlockText != null)
                     systemBlockText.text = "看來你對共享經濟已經有初步了解囉！";
             }
+
+            GameData.RecordFeedbackShown("C2_REUSE_ORDER_CORRECT");
         }
+
+        GameData.CompleteTask();
 
         isWaitingComicCorrectNext = true;
         if (systemBlockNextBtn != null)
             systemBlockNextBtn.interactable = true;
     }
 
-    public void OnSelectScenario(bool isCorrect)
+    public void OnSelectScenario(string answer, bool isCorrect)
     {
+        GameData.RecordAnswer(answer, isCorrect);
+
         if (isCorrect)
         {
             PlaySFX(correctSFX);
@@ -352,7 +389,11 @@ public class Tutorial3_Manager : MonoBehaviour
                     if (systemBlockText != null)
                         systemBlockText.text = "判斷正確！\n點擊右邊的箭頭我們繼續往下看！";
                 }
+
+                GameData.RecordFeedbackShown("C2_REUSE_CASE_CORRECT");
             }
+
+            GameData.CompleteTask();
 
             if (TutorialCarouselManager.Instance != null)
             {
@@ -383,6 +424,8 @@ public class Tutorial3_Manager : MonoBehaviour
                     if (warningText != null)
                         warningText.text = "好像不太對呢...再想一想吧！";
                 }
+
+                GameData.RecordFeedbackShown("C2_REUSE_CASE_WRONG");
             }
         }
     }

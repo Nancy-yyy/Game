@@ -231,6 +231,10 @@ public class TripartiteQAManager : MonoBehaviour
     {
         if (currentIndex < qaList.Count)
         {
+            // 研究紀錄：每一題都是 C3_THREEPARTY 題組中的獨立子 Task
+            // 這樣每題都有自己的 FirstAttemptCorrect、Attempts、TimeToCorrect。
+            GameData.StartTask(GetResearchTaskId(currentIndex));
+
             if (txtQuestion != null) txtQuestion.text = qaList[currentIndex].questionText;
             if (txtProgress != null) txtProgress.text = $"{currentIndex + 1} / {qaList.Count}";
             if (txtHint != null) txtHint.text = "請點擊下方負責這項職責的角色！";
@@ -242,8 +246,12 @@ public class TripartiteQAManager : MonoBehaviour
         if (isAnswering || currentIndex >= qaList.Count) return;
 
         RoleType correctRole = qaList[currentIndex].correctRole;
+        bool isCorrect = clickedRole == correctRole;
 
-        if (clickedRole == correctRole)
+        // 研究紀錄：保留玩家實際選擇 Provider / User / Platform
+        GameData.RecordAnswer(clickedRole.ToString(), isCorrect);
+
+        if (isCorrect)
         {
             if (AudioManager.Instance != null) AudioManager.Instance.PlayCorrect();
             if (txtHint != null) txtHint.text = "答對了！沒錯，就是他！";
@@ -258,7 +266,7 @@ public class TripartiteQAManager : MonoBehaviour
 
             if (GameData.IsHighInfo)
             {
-                // 🌟 高資訊版本：開啟獨立解析夾板，載入多句解析s
+                // 🌟 高資訊版本：開啟獨立解析夾板，載入多句解析
                 if (highInfoPanel != null) highInfoPanel.SetActive(true);
                 currentExpIndex = 0;
                 currentExplanationLines = GetDetailedExplanationLines(currentIndex, clickedRole, correctRole);
@@ -274,6 +282,11 @@ public class TripartiteQAManager : MonoBehaviour
                     wrongHintBackdrop.SetActive(true);
                 }
             }
+
+            // 研究紀錄：錯誤後實際看到一次 Low / High 回饋
+            GameData.RecordFeedbackShown(
+                "C3_THREEPARTY_Q" + (currentIndex + 1) + "_WRONG"
+            );
         }
     }
 
@@ -325,6 +338,9 @@ public class TripartiteQAManager : MonoBehaviour
         btn.transform.localScale = originalScale;
 
         yield return new WaitForSeconds(0.4f);
+
+        // 目前這一題正式完成
+        GameData.CompleteTask();
 
         currentIndex++;
         if (currentIndex >= qaList.Count)
@@ -433,6 +449,24 @@ public class TripartiteQAManager : MonoBehaviour
                     $"選錯囉！正確答案應該由「{correctName}」來負責。",
                     "請重新回想三方在共享經濟中的權利與義務分工界線！"
                 };
+        }
+    }
+
+    private string GetResearchTaskId(int qIndex)
+    {
+        switch (qIndex)
+        {
+            case 0: return GameData.TaskIds.C3_THREEPARTY_Q1;
+            case 1: return GameData.TaskIds.C3_THREEPARTY_Q2;
+            case 2: return GameData.TaskIds.C3_THREEPARTY_Q3;
+            case 3: return GameData.TaskIds.C3_THREEPARTY_Q4;
+            case 4: return GameData.TaskIds.C3_THREEPARTY_Q5;
+            case 5: return GameData.TaskIds.C3_THREEPARTY_Q6;
+            case 6: return GameData.TaskIds.C3_THREEPARTY_Q7;
+            case 7: return GameData.TaskIds.C3_THREEPARTY_Q8;
+            case 8: return GameData.TaskIds.C3_THREEPARTY_Q9;
+            case 9: return GameData.TaskIds.C3_THREEPARTY_Q10;
+            default: return GameData.TaskIds.C3_THREEPARTY;
         }
     }
 

@@ -102,19 +102,19 @@ public class Tutorial2_Manager : MonoBehaviour
         if (optionA_Btn != null)
         {
             optionA_Btn.onClick.RemoveAllListeners();
-            optionA_Btn.onClick.AddListener(() => OnSelectOption(false));
+            optionA_Btn.onClick.AddListener(() => OnSelectOption("A", false));
             optionA_Btn.interactable = true;
         }
         if (optionB_Btn != null)
         {
             optionB_Btn.onClick.RemoveAllListeners();
-            optionB_Btn.onClick.AddListener(() => OnSelectOption(false));
+            optionB_Btn.onClick.AddListener(() => OnSelectOption("B", false));
             optionB_Btn.interactable = true;
         }
         if (optionC_Btn != null)
         {
             optionC_Btn.onClick.RemoveAllListeners();
-            optionC_Btn.onClick.AddListener(() => OnSelectOption(true));
+            optionC_Btn.onClick.AddListener(() => OnSelectOption("C", true));
             optionC_Btn.interactable = true;
         }
 
@@ -202,11 +202,17 @@ public class Tutorial2_Manager : MonoBehaviour
             if (systemBlockPanel != null) systemBlockPanel.SetActive(false);
             if (sceneA_StudentStory != null) sceneA_StudentStory.SetActive(false);
             if (quizGroup != null) quizGroup.SetActive(true);
+
+            // 研究紀錄：正式進入閒置資產判斷題
+            GameData.StartTask(GameData.TaskIds.C2_IDLE_VALUE);
         }
     }
 
-    public void OnSelectOption(bool isCorrect)
+    public void OnSelectOption(string answer, bool isCorrect)
     {
+        // 研究紀錄：每次正式作答
+        GameData.RecordAnswer(answer, isCorrect);
+
         if (isCorrect)
         {
             PlaySFX(correctSFX);
@@ -237,6 +243,8 @@ public class Tutorial2_Manager : MonoBehaviour
                     if (warningText != null)
                         warningText.text = "好像不太對呢...再想一想吧！";
                 }
+
+                GameData.RecordFeedbackShown("C2_IDLE_VALUE_WRONG");
             }
         }
     }
@@ -260,7 +268,12 @@ public class Tutorial2_Manager : MonoBehaviour
                 if (systemBlockText != null)
                     systemBlockText.text = "沒錯呦！";
             }
+
+            // 研究紀錄：答對後實際顯示正確回饋
+            GameData.RecordFeedbackShown("C2_IDLE_VALUE_CORRECT");
         }
+
+        GameData.CompleteTask();
 
         yield return new WaitForSeconds(3f);
 

@@ -63,8 +63,14 @@ public class EndingManager : MonoBehaviour
 
     private int sustainabilityStoryStep = 0;
 
+    // 防止結尾按鈕重複觸發時，Experiment_Results.csv 被寫入兩次
+    private bool experimentResultExported = false;
+
     private void Start()
     {
+        // 研究紀錄：Ending 從本場景開始計時
+        GameData.StartEndingTimer();
+
         transferQuestionPanel.SetActive(false);
         conceptFillPanel.SetActive(false);
 
@@ -103,6 +109,14 @@ public class EndingManager : MonoBehaviour
     {
         transferQuestionPanel.SetActive(false);
         conceptFillPanel.SetActive(true);
+
+        // 研究紀錄：
+        // END_TRANSFER_TEXT = 三欄建構反應的整體提交
+        // END_IDLE / END_RIGHT / END_PLATFORM = 同一次提交中的三個概念維度
+        GameData.StartTask(GameData.TaskIds.END_TRANSFER_TEXT);
+        GameData.StartParallelTask(GameData.TaskIds.END_IDLE);
+        GameData.StartParallelTask(GameData.TaskIds.END_RIGHT);
+        GameData.StartParallelTask(GameData.TaskIds.END_PLATFORM);
     }
 
     public void CheckConceptAnswers()
@@ -139,8 +153,59 @@ public class EndingManager : MonoBehaviour
             answer3.Contains("平台") ||
             answer3.Contains("媒合");
 
-        if (!answer1Correct || !answer2Correct || !answer3Correct)
+        bool allTransferCorrect =
+            answer1Correct &&
+            answer2Correct &&
+            answer3Correct;
+
+        // 研究紀錄：整體建構反應保留三欄原文
+        string combinedAnswer =
+            "IDLE=" + answer1 +
+            "|RIGHT=" + answer2 +
+            "|PLATFORM=" + answer3;
+
+        GameData.RecordAnswer(
+            combinedAnswer,
+            allTransferCorrect
+        );
+
+        // 三個概念維度獨立追蹤。
+        // 某一概念第一次答對後即完成，不再因後續重送而增加 Attempt。
+        if (GameData.RecordParallelAnswer(
+            GameData.TaskIds.END_IDLE,
+            answer1,
+            answer1Correct
+        ) && answer1Correct)
         {
+            GameData.CompleteParallelTask(GameData.TaskIds.END_IDLE);
+        }
+
+        if (GameData.RecordParallelAnswer(
+            GameData.TaskIds.END_RIGHT,
+            answer2,
+            answer2Correct
+        ) && answer2Correct)
+        {
+            GameData.CompleteParallelTask(GameData.TaskIds.END_RIGHT);
+        }
+
+        if (GameData.RecordParallelAnswer(
+            GameData.TaskIds.END_PLATFORM,
+            answer3,
+            answer3Correct
+        ) && answer3Correct)
+        {
+            GameData.CompleteParallelTask(GameData.TaskIds.END_PLATFORM);
+        }
+
+        if (!allTransferCorrect)
+        {
+            // 舊版摘要欄位保留
+            GameData.Ending_ConceptTransferErrors++;
+            if (!answer1Correct) GameData.Ending_IdleAssetErrors++;
+            if (!answer2Correct) GameData.Ending_UsageRightErrors++;
+            if (!answer3Correct) GameData.Ending_MatchingMethodErrors++;
+
             if (wrongAudio != null)
             {
                 wrongAudio.Play();
@@ -162,6 +227,9 @@ public class EndingManager : MonoBehaviour
                     answer3Correct
                 );
             }
+
+            // 一次錯誤提交視為一次 Low / High 回饋套件
+            GameData.RecordFeedbackShown("END_TRANSFER_TEXT_WRONG");
         }
         else
         {
@@ -180,6 +248,9 @@ public class EndingManager : MonoBehaviour
             {
                 ShowDeepConceptCorrectFeedback();
             }
+
+            GameData.RecordFeedbackShown("END_TRANSFER_TEXT_CORRECT");
+            GameData.CompleteTask();
         }
     }
 
@@ -354,15 +425,21 @@ public class EndingManager : MonoBehaviour
     {
         sustainabilityStoryPanel.SetActive(false);
         sustainabilityQuestionPanel.SetActive(true);
+
+        // 研究紀錄：永續判斷題正式開始
+        GameData.StartTask(GameData.TaskIds.END_SUSTAIN);
     }
 
     public void ChooseSustainabilityA()
     {
-        ShowSustainabilityWrong();
+        ShowSustainabilityWrong("A");
     }
 
     public void ChooseSustainabilityB()
     {
+        // 研究紀錄：B 為正確答案
+        GameData.RecordAnswer("B", true);
+
         if (correctAudio != null)
         {
             correctAudio.Play();
@@ -378,15 +455,24 @@ public class EndingManager : MonoBehaviour
         {
             ShowDeepSustainabilityCorrect();
         }
+
+        GameData.RecordFeedbackShown("END_SUSTAIN_CORRECT");
+        GameData.CompleteTask();
     }
 
     public void ChooseSustainabilityC()
     {
-        ShowSustainabilityWrong();
+        ShowSustainabilityWrong("C");
     }
 
-    private void ShowSustainabilityWrong()
+    private void ShowSustainabilityWrong(string selectedAnswer)
     {
+        // 研究紀錄：A / C 為錯誤答案
+        GameData.RecordAnswer(selectedAnswer, false);
+
+        // 舊版摘要欄位保留
+        GameData.Ending_SustainabilityErrors++;
+
         if (wrongAudio != null)
         {
             wrongAudio.Play();
@@ -402,6 +488,8 @@ public class EndingManager : MonoBehaviour
         {
             sustainabilityDeepWrongPanel.SetActive(true);
         }
+
+        GameData.RecordFeedbackShown("END_SUSTAIN_WRONG");
     }
 
     public void CloseSustainabilityWrongPanel()
@@ -465,6 +553,16 @@ public class EndingManager : MonoBehaviour
 
     public void EnterEndingHatching()
     {
+        // Ending 的正式互動題到此全部結束
+        GameData.StopEndingTimer();
+
+        // 研究紀錄：每位受試者整場遊戲只匯出一次摘要資料
+        if (!experimentResultExported)
+        {
+            GameData.ExportToCSV();
+            experimentResultExported = true;
+        }
+
         SceneManager.LoadScene("EndingHatching");
     }
 }

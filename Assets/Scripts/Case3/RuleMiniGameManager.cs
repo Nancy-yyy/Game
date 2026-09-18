@@ -45,6 +45,9 @@ public class RuleMiniGameManager : MonoBehaviour
 
     public void StartMiniGame()
     {
+        // 研究紀錄：使用／歸還規範小遊戲正式開始
+        GameData.StartTask(GameData.TaskIds.C3_RULES);
+
         if (ruleGamePanel != null) ruleGamePanel.SetActive(true);
         if (ruleSuccessPanel != null) ruleSuccessPanel.SetActive(false);
         ResetAllCards(); // 保持你在編輯器擺放好的固定順序
@@ -117,6 +120,15 @@ public class RuleMiniGameManager : MonoBehaviour
             }
         }
 
+        // 研究紀錄：四格全部填滿才算一次正式作答
+        string submittedAnswer =
+            GetRuleCardResearchCode(slotsOccupied[0]) + ">" +
+            GetRuleCardResearchCode(slotsOccupied[1]) + ">" +
+            GetRuleCardResearchCode(slotsOccupied[2]) + ">" +
+            GetRuleCardResearchCode(slotsOccupied[3]);
+
+        GameData.RecordAnswer(submittedAnswer, allCorrect);
+
         if (allCorrect)
         {
             OnGameSuccess();
@@ -132,6 +144,17 @@ public class RuleMiniGameManager : MonoBehaviour
                 wrongPromptBackdrop.SetActive(true);
             }
         }
+    }
+
+    private string GetRuleCardResearchCode(DraggableRuleCard card)
+    {
+        if (card == null) return "UNKNOWN";
+
+        int index = System.Array.IndexOf(allRuleCards, card);
+        string code = index >= 0 ? "CARD_" + (index + 1) : "CARD_UNKNOWN";
+
+        // 一併保留該卡在遊戲邏輯中屬於正確條款或干擾條款
+        return code + (card.isCorrectRule ? "_VALID" : "_DISTRACTOR");
     }
 
     private bool IsOverlapping(RectTransform rectA, RectTransform rectB)
