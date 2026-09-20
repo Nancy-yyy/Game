@@ -267,6 +267,17 @@ public class AITutorSidebar : MonoBehaviour
                     AIQueryResponse response = JsonUtility.FromJson<AIQueryResponse>(resJson);
                     if (targetText != null) targetText.text = response.short_answer;
                     RecordHistory("鳥鳥", response.short_answer);
+
+                    Debug.Log($"【AI研究紀錄】準備記錄 AI：{userQuery} / {response.short_answer} / {timer:F2}秒");
+
+                    // ======================================
+                    // 實驗資料紀錄：AI 成功回答後記錄本次互動
+                        GameData.RecordAIInteraction(
+                        userQuery,
+                        response.short_answer,
+                        timer
+                    );
+                    // ======================================
                 }
                 catch (Exception e)
                 {

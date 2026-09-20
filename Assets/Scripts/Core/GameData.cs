@@ -708,11 +708,6 @@ public static class GameData
         float aiResponseTime = 0f
     )
     {
-        if (!EnsureCurrentTask("RecordAIInteraction"))
-        {
-            return false;
-        }
-
         if (!HasAI)
         {
             Debug.LogWarning(
@@ -737,33 +732,56 @@ public static class GameData
             return false;
         }
 
-        currentTask.AIUseCount++;
+        // ======================================
+        // AI 使用紀錄：不論目前是否正在 Task，都計入整場 AI 使用次數
+        // ======================================
+
         TotalAIUseCount++;
 
-        IncrementDictionaryCount(
-            caseAIUseCounts,
-            currentTask.CaseID
-        );
+        // 有正在進行的 Task：AI 使用歸到該 Task
+        if (currentTask != null)
+        {
+            currentTask.AIUseCount++;
 
-        AppendAILog(
-            currentTask.CaseID,
-            currentTask.TaskID,
-            TotalAIUseCount,
-            playerQuestion ?? "",
-            aiResponse ?? "",
-            aiResponseTime
-        );
+            IncrementDictionaryCount(
+                caseAIUseCounts,
+                currentTask.CaseID
+            );
 
-        float taskElapsedTime =
-            Time.realtimeSinceStartup - currentTask.StartRealtime;
+            AppendAILog(
+                currentTask.CaseID,
+                currentTask.TaskID,
+                TotalAIUseCount,
+                playerQuestion ?? "",
+                aiResponse ?? "",
+                aiResponseTime
+            );
 
-        AppendGameplayEvent(
-            "AI_USED",
-            "AIUseNo=" + TotalAIUseCount,
-            "",
-            taskElapsedTime,
-            0f
-        );
+            float taskElapsedTime =
+                Time.realtimeSinceStartup - currentTask.StartRealtime;
+
+            AppendGameplayEvent(
+                "AI_USED",
+                "AIUseNo=" + TotalAIUseCount,
+                "",
+                taskElapsedTime,
+                0f
+            );
+        }
+        // 沒有正在進行的 Task：仍然保留這次 AI 使用
+        else
+        {
+            AppendAILog(
+                "",
+                "",
+                TotalAIUseCount,
+                playerQuestion ?? "",
+                aiResponse ?? "",
+                aiResponseTime
+            );
+        }
+
+        // ======================================
 
         return true;
     }

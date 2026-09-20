@@ -37,7 +37,7 @@ public class ScaleNextC_Controller : MonoBehaviour
     [Header("【第四階段：錯誤提示系統 (System_msg)】")]
     public RectTransform systemMsgPanel;    
     public float sysMsgSlideDuration = 0.5f; 
-    public float sysMsgDisplayDuration = 5.0f; 
+    public float sysMsgDisplayDuration = 1.5f; 
     private Coroutine activeSysMsgRoutine;
     private Vector2 sysMsgTargetPos;
     private Vector2 sysMsgHidePos;
@@ -288,7 +288,7 @@ public class ScaleNextC_Controller : MonoBehaviour
             if (birdFeedbackBubble != null && birdFeedbackText != null)
             {
                 birdFeedbackBubble.SetActive(true);
-                birdFeedbackText.text = "哇！主人好像找到一個不會讓錢包哭哭的方法了！\n(點擊繼續)";
+                birdFeedbackText.text = "哇！主人好像找到一個不會讓錢包哭哭的方法了！";
                 LayoutRebuilder.ForceRebuildLayoutImmediate(birdFeedbackBubble.GetComponent<RectTransform>());
             }
 

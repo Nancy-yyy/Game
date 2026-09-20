@@ -622,7 +622,7 @@ public class Tutorial4_Manager : MonoBehaviour
             if (GameData.IsHighInfo)
             {
                 if (systemBlockText != null)
-                    systemBlockText.text = "B 選項是由學生提供自己暫時不用的書，最符合共享經濟『利用既有閒置資產』的特徵。";
+                    systemBlockText.text = "B 選項是由學生提供自己暫時不用的書，\n最符合共享經濟『利用既有閒置資產』的特徵。";
             }
             else
             {

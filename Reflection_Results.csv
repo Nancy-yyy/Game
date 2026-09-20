@@ -1,2 +1,4 @@
 ﻿記錄時間,受試者ID,AssignedCondition,ActualCondition,GameVersion,CaseID,ReflectionID,RawText,ResponseTime,AIUsedBeforeReflection,AIUseCountBeforeReflection,CharacterCount
 2026-09-18 23:24:15.408,P001,LowInfo_NoAI,LowInfo_NoAI,1.0,C2,C2_REFLECTION,因為不一定有平台媒合，書沒有還回去怎麼處裡,51.534,0,0,21
+2026-09-21 00:35:08.499,P002,HighInfo_AI,HighInfo_AI,1.0,C2,C2_REFLECTION,因為租借可能是商業模式,28.476,0,0,11
+2026-09-21 00:52:32.581,P003,LowInfo_AI,LowInfo_AI,1.0,C2,C2_REFLECTION,使用權,96.819,0,0,3

@@ -1,1 +1,5 @@
 ﻿記錄時間,受試者ID,AssignedCondition,ActualCondition,GameVersion,CaseID,TaskID,AIUseNo,PlayerQuestion,AIResponse,AIResponseTime
+31:15.8,P005,LowInfo_AI,LowInfo_AI,1,,,1,甚麼是資產,"啾～這題問得好！本智商 180 的鳥鳥告訴你，資產就是能幫你創造價值或帶來好處的東西唷！
+
+嘿嘿，那你覺得手邊有哪些東西一直躺在那裡、沒被好好利用呢？",1.6
+37:08.5,P007,HighInfo_AI,HighInfo_AI,1,,,1,早安,早安呀，主人主人！啾～今天也要發揮高達 180 的智商來探索平台媒合的奧秘嗎？快想想看，把閒置資源分享出去時，雙方是怎麼透過平台找到彼此的呢？,1.58

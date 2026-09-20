@@ -204,7 +204,7 @@ public class LineChatManagerNew : MonoBehaviour
         if (libraryPanel != null && libraryRect != null)
         {
             libraryPanel.SetActive(true);
-            libraryRect.anchoredPosition = new Vector2(600f, 0f);
+            libraryRect.anchoredPosition = new Vector2(800f, 0f);
             if (libraryGroup != null) libraryGroup.alpha = 0f;
         }
 

@@ -299,7 +299,7 @@ public class Tutorial3_Manager : MonoBehaviour
                 if (GameData.IsHighInfo)
                 {
                     if (warningText != null)
-                        warningText.text = "順序不太對喔！請注意：必須先存在『閒置資產』與『新需求出現』，才能進入『媒合取得使用權』，最後達成『資產再次被使用』。";
+                        warningText.text = "順序不太對喔！\n想想看你平常是先有需求還是先發現所需物品呢？\n是先取得使用權利還是先開始使用呢？";
                 }
                 else
                 {

@@ -1,1 +1,3 @@
 ﻿完成時間,受試者ID,組別條件,AssignedCondition,ActualCondition,GameVersion,是否AI,是否高資訊,總AI使用次數,AI最低使用次數達成,Case1閒置容量錯誤,Case1媒合流程錯誤,Case1資源稀缺錯誤,Case1耗時,Case2_Tut1錯誤,Case2_Tut3錯誤,Case2_Tut4線索錯誤,Case2_Tut4案例錯誤,Case2反思回答,Case2天平選擇,Case2理由錯誤,Case2耗時,Case3錯誤數,Case3決策,Case3耗時,Ending概念遷移錯誤,Ending閒置資產錯誤,Ending使用權錯誤,Ending媒合方式錯誤,Ending永續判斷錯誤,Ending耗時,總遊玩時間
+2026-09-21 00:41:22,P002,HighInfo_AI,HighInfo_AI,HighInfo_AI,1.0,True,True,0,0,1,0,1,83.892,1,1,0,0,因為租借可能是商業模式,C,1,280.328,1,方案B_補習班教室,156.679,1,0,1,0,0,77.302,780.400
+2026-09-21 00:55:31,P003,LowInfo_AI,LowInfo_AI,LowInfo_AI,1.0,True,False,0,0,1,0,0,103.108,1,1,1,0,使用權,C,3,224.828,1,方案C_社區活動中心,82.235,2,0,2,0,0,29.376,552.236
